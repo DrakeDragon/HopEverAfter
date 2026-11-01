@@ -115,6 +115,7 @@ button.rcard{width:100%;color:inherit;font-family:inherit;text-align:left}.btabs
 .hero-detail{display:grid;grid-template-columns:140px 1fr;align-items:center;text-align:left;gap:20px;background:radial-gradient(ellipse at 20% 60%,#527c7344,transparent 70%),#ffffff04;border:1px solid var(--line);border-radius:8px;padding:16px;margin:12px 0}.hero-detail>img{width:140px;height:180px;object-fit:contain;filter:drop-shadow(0 8px 12px #0006)}.hero-detail h2{font:28px Georgia;margin:0 0 8px;color:#e8d3a3}.hero-detail p{font:13px/1.6 system-ui}.hg{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important}.hg button.cell{color:#d6dfd3;font-family:system-ui;min-height:95px;border:1px solid #c3a36c33;border-radius:7px;background:#152e33;padding:7px!important;cursor:pointer}.hg .cell img{width:58px!important;height:68px!important}.hg .cell.sel{background:#36554f;border-color:#e2c588}.hg .cell.lk img{filter:grayscale(.85) brightness(.65)}.hg .cell i{color:#e5d5a3}.pact-option{padding:12px;text-align:left;border:1px solid var(--line);border-radius:6px;margin:8px 0}.pact-option.chosen{background:#638e7c22;border-color:#d5b87c}.pact-option p{font:13px system-ui}
 @media(max-width:500px){.hg{grid-template-columns:repeat(3,minmax(0,1fr))!important}.hero-detail{grid-template-columns:100px 1fr;gap:12px;padding:10px}.hero-detail>img{width:100px;height:150px}.hero-detail h2{font-size:24px}#map .mapbox{padding:12px}.mapbox h1{font-size:22px}.btabs{gap:4px}#panel .card{padding:12px}}
 @media(max-height:450px){#ptitle{font-size:22px!important;margin-bottom:6px}#pbtns{max-height:36dvh}.mapbox h1{font-size:20px}.btabs button{min-height:32px}#map .mapbox{padding:8px}#bMapBack{min-height:42px}}
+.challenge-line{font:bold 21px/1.2 system-ui!important;letter-spacing:1px;color:#ffe4a0!important}.shop-item{text-align:left;border:1px solid var(--line);border-radius:7px;background:linear-gradient(120deg,#2b47402b,#10272b);padding:14px;margin:10px 0}.shop-item h3{margin:0 0 6px;color:#e9d2a2;font:21px Georgia}.shop-item p{font:13px/1.5 system-ui}.shop-item .btn{display:inline-block;width:auto;min-width:100px;margin-right:6px;font-size:12px;padding:10px}.shop-level{font:11px system-ui;color:#9dbdb4}.shop-tabs{display:flex;gap:8px;margin:10px 0}.shop-tabs button{flex:1}
 </style>
 </head>
 <body>
@@ -138,6 +139,7 @@ button.rcard{width:100%;color:inherit;font-family:inherit;text-align:left}.btabs
     <button class="btn" id="bPlay">▶ Play</button>
     <button class="btn alt" id="bMap">🗺️ World Map</button>
     <button class="btn alt" id="bHero">🧙 Heroes</button>
+    <button class="btn alt" id="bShop">The Wishkeeper’s Shop</button>
     <button class="btn alt" id="bFriends">Tale Sparks & pacts</button>
     <button class="btn ghost" id="bBook">📖 Storybook</button>
     <p id="menuStat" style="font-size:14px;color:#cdbbf0;margin-top:12px"></p>
@@ -164,6 +166,12 @@ const save = { cleared:Array(NR).fill(false), disc:{}, clears:0, deaths:0, bestR
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s && Array.isArray(s.cleared)) Object.assign(save, s); } catch (e) {}
 if(!['gatherer','guardian','striker'].includes(save.pact))save.pact='gatherer';
 save.feathers=Math.min(2,Math.max(0,Math.floor(Number(save.feathers)||0)));
+if(!Array.isArray(save.sparkStyles))save.sparkStyles=['starlight'];
+if(!save.sparkStyles.includes('starlight'))save.sparkStyles.push('starlight');
+if(!save.sparkStyle)save.sparkStyle='starlight';
+if(!save.sigils||typeof save.sigils!=='object')save.sigils={reach:0,strike:0,ward:0};
+for(const id of ['reach','strike','ward'])save.sigils[id]=Math.max(0,Math.min(3,Math.floor(Number(save.sigils[id])||0)));
+if(!['reach','strike','ward'].includes(save.sigil))save.sigil='';
 if(!save.sec) save.sec={}; if(!save.lv) save.lv={}; if(!save.hero) save.hero='wren'; if(typeof save.stars!=='number') save.stars=0;
 while(save.cleared.length<NR) save.cleared.push(false);
 function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
@@ -1209,13 +1217,13 @@ function drawAmb(cam,time){
     } else if(k==='ember'||k==='lantern'||k==='bubble'||k==='glow'){
       y=LH-mod(a.y*LH+time*(18+a.v*30),LH+20); x+=Math.sin(time*1.2+a.ph)*10;
       if(k==='ember'){ ctx.fillStyle='rgba(255,'+(120+a.v*80|0)+',40,.85)'; ctx.beginPath(); ctx.arc(x,y,a.sz*.7,0,7); ctx.fill(); }
-      else if(k==='lantern'){ ctx.fillStyle='rgba(255,190,80,.8)'; ctx.beginPath(); ctx.arc(x,y,a.sz+1,0,7); ctx.fill(); ctx.fillStyle='rgba(255,190,80,.2)'; ctx.beginPath(); ctx.arc(x,y,a.sz*3.4,0,7); ctx.fill(); }
+      else if(k==='lantern'){ ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7bb6ce';ctx.fillRect(x,y,1,5);ctx.restore(); }
       else if(k==='bubble'){ ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,a.sz*1.6,0,7); ctx.stroke(); }
       else { ctx.fillStyle='rgba(120,255,240,.35)'; ctx.beginPath(); ctx.arc(x,y,a.sz*2,0,7); ctx.fill(); }
     } else if(k==='firefly'||k==='star'){
       y=a.y*groundY*.9+Math.sin(time*.8+a.ph)*12; x+=Math.cos(time*.7+a.ph)*10;
-      al=.35+.65*Math.abs(Math.sin(time*1.7+a.ph)); ctx.globalAlpha=al;
-      ctx.fillStyle=k==='firefly'?'#d8ff6a':'#fff'; ctx.beginPath(); ctx.arc(x,y,a.sz*.6,0,7); ctx.fill();
+      al=.1+.18*Math.abs(Math.sin(time*1.7+a.ph)); ctx.globalAlpha=al;
+      ctx.fillStyle=k==='firefly'?'#76accb':'#bccbd2'; ctx.beginPath(); ctx.arc(x,y,a.sz*.6,0,7); ctx.fill();
       if(k==='firefly'){ ctx.globalAlpha=al*.25; ctx.beginPath(); ctx.arc(x,y,a.sz*3,0,7); ctx.fill(); }
     } else if(k==='rain'){
       y=mod(a.y*LH+time*(300+a.v*200),LH+20)-10; ctx.strokeStyle='rgba(200,210,255,.45)'; ctx.lineWidth=1.3; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-4,y+12); ctx.stroke();
@@ -1368,9 +1376,9 @@ function drawFx(camX){
 const game = { mode:'menu', t:0 };
 let H = null, run = null, perks = { hearts:3, magnet:42, power:0, best:-1, lines:[] };
 let heartsStr='', cntStr='';
-function newRun(){ run = { party:[], tally:0, recruited:0, pact:save.pact||'gatherer', snap:{}, score:0, deaths:0, t0:Date.now(), bossHp:0 }; perks=computePerks([]); }
+function newRun(){ run = { party:[], tally:0, recruited:0, sigil:save.sigil||'',sparkStyle:save.sparkStyle||'starlight', pact:save.pact||'gatherer', snap:{}, score:0, deaths:0, t0:Date.now(), bossHp:0 }; perks=computePerks([]); }
 const SPARK_POWER=[1,3,7,15,31,63];
-const PACTS={gatherer:{name:'Gatherer',desc:'Recruit for 2 fewer crumbs; +20 pickup reach.'},guardian:{name:'Guardian',desc:'Start each trail with one extra hazard shield.'},striker:{name:'Striker',desc:'Tale Sparks deal 35% more boss damage.'}};
+const PACTS={gatherer:{name:'Gatherer',desc:'Recruit for 2 fewer crumbs; +8 pickup reach.'},guardian:{name:'Guardian',desc:'Start each trail with one extra hazard shield, up to two total.'},striker:{name:'Striker',desc:'Tale Sparks deal 35% more boss damage.'}};
 function sparkCost(){return Math.min(24,12+Math.floor((run.recruited||0)/2)*2)-((run.pact||'gatherer')==='gatherer'?2:0);}
 function computePerks(party){
   const best=party.length?Math.max.apply(null,party):-1;
@@ -1379,11 +1387,11 @@ function computePerks(party){
   const top5=party.slice(0,5);
   const sumT=top5.reduce((a,t)=>a+t,0);
   const pact=run&&run.pact||save.pact||'gatherer';
-  const magnet=Math.min(110,42+sumT*5+(pact==='gatherer'?20:0));
+  const magnet=Math.min(110,28+Math.min(12,sumT*2)+(pact==='gatherer'?8:0));
   const power=top5.reduce((a,t)=>a+SPARK_POWER[t],0)*(pact==='striker'?1.35:1);
   const E=heroEff();
-  return { hearts:hearts+(E.hearts||0), magnet:Math.min(160,magnet+(E.mag||0)), power:power*(1+(E.pow||0)), best,
-    inv:E.inv||0, coy:E.coy||0, buff:E.buff||0, crumb:E.crumb||0, merge:E.merge||0, shield:(E.shield||0)+(pact==='guardian'?1:0) };
+  return { hearts:hearts+(E.hearts||0), magnet:Math.min(56,magnet+(E.mag||0)+(run&&run.sigil==='reach'?2*(save.sigils.reach||0):0)), power:power*(1+Math.min(.4,(E.pow||0)))*(run&&run.sigil==='strike'?1+.04*(save.sigils.strike||0):1), best,
+    inv:Math.min(.5,(E.inv||0)+(run&&run.sigil==='ward'?.08*(save.sigils.ward||0):0)), coy:E.coy||0, buff:E.buff||0, crumb:E.crumb||0, merge:E.merge||0, shield:Math.min(2,(E.shield||0)+(pact==='guardian'?1:0)) };
 }
 
 /* ============================== DOM HELPERS ============================== */
@@ -1607,16 +1615,16 @@ function newHero(startX,startY){ return { x:startX, y:startY, vy:0, on:true, coy
 const CTX=ctx;
 const HEROES=[
  {id:'wren',name:'Wren',emoji:'🎀',un:0,look:{hair:'#ff2fb3',top:'#19d3f0',skin:'#ffd9b5',hat:''},desc:'Longer safety after a hit',eff:l=>({inv:.06*l}),txt:l=>'+'+(.06*l).toFixed(2)+'s safety after a hit'},
- {id:'crumb',name:'Crumb',emoji:'🍪',un:1,look:{hair:'#7a4a1a',top:'#ffffff',skin:'#d29a5a',hat:'icing'},desc:'Stronger crumb magnet',eff:l=>({mag:6*l}),txt:l=>'+'+(6*l)+' magnet range'},
+ {id:'crumb',name:'Crumb',emoji:'🍪',un:1,look:{hair:'#7a4a1a',top:'#ffffff',skin:'#d29a5a',hat:'icing'},desc:'Stronger crumb magnet',eff:l=>({mag:1.2*l}),txt:l=>'+'+(1.2*l).toFixed(1)+' pickup reach'},
  {id:'quill',name:'Quill',emoji:'🐦',un:4,look:{hair:'#2a2438',top:'#7a4ac8',skin:'#e9dfff',hat:'beak'},desc:'Very forgiving jumps',eff:l=>({coy:.012*l}),txt:l=>'+'+Math.round(12*l)+'ms late-jump grace'},
  {id:'pip',name:'Pip',emoji:'🧚',un:8,look:{hair:'#ffe066',top:'#7dffb0',skin:'#ffe9d0',hat:'wings'},desc:'Power-ups last longer',eff:l=>({buff:.08*l}),txt:l=>'+'+Math.round(8*l)+'% power-up time'},
  {id:'hazel',name:'Hazel',emoji:'🐇',un:12,look:{hair:'#f4f0ff',top:'#ff9ad5',skin:'#ffe0e8',hat:'bunny'},desc:'Sometimes finds extra crumbs',eff:l=>({crumb:.05*l}),txt:l=>Math.round(5*l)+'% chance of a bonus crumb'},
- {id:'rook',name:'Sir Rook',emoji:'🛡️',un:18,look:{hair:'#5a4a3a',top:'#9aa6b8',skin:'#f0c8a0',hat:'helm'},desc:'Starts every trail with a shield',eff:l=>({shield:1+(l>=5?1:0)+(l>=10?1:0)}),txt:l=>(1+(l>=5?1:0)+(l>=10?1:0))+' starting shield'+(l>=5?'s':'')},
- {id:'mabel',name:'Mabel',emoji:'🧙',un:25,look:{hair:'#c8c0d8',top:'#6a3ab0',skin:'#e8d8c0',hat:'witch'},desc:'Her party hits bosses harder',eff:l=>({pow:.08*l}),txt:l=>'+'+Math.round(8*l)+'% boss damage'},
+ {id:'rook',name:'Sir Rook',emoji:'🛡️',un:18,look:{hair:'#5a4a3a',top:'#9aa6b8',skin:'#f0c8a0',hat:'helm'},desc:'Starts every trail with a shield',eff:l=>({shield:1+(l>=5?1:0)}),txt:l=>(1+(l>=5?1:0))+' starting shield'+(l>=5?'s':'')},
+ {id:'mabel',name:'Mabel',emoji:'🧙',un:25,look:{hair:'#c8c0d8',top:'#6a3ab0',skin:'#e8d8c0',hat:'witch'},desc:'Her party hits bosses harder',eff:l=>({pow:.03*l}),txt:l=>'+'+Math.round(3*l)+'% boss damage'},
  {id:'finn',name:'Prince Finn',emoji:'🐸',un:35,look:{hair:'#2e9a4a',top:'#ffd34a',skin:'#9ad870',hat:'crown'},desc:'Extra hearts as he levels',eff:l=>({hearts:(l>=3?1:0)+(l>=6?1:0)+(l>=9?1:0)}),txt:l=>'+'+((l>=3?1:0)+(l>=6?1:0)+(l>=9?1:0))+' heart(s) (at levels 3, 6, 9)'},
  {id:'ember',name:'Ember',emoji:'🔥',un:50,look:{hair:'#ff7a1a',top:'#ff3b3b',skin:'#ffd0a8',hat:'flame'},desc:'Merges often spark a bonus power-up',eff:l=>({merge:.07*l}),txt:l=>Math.round(7*l)+'% bonus power-up on merge'},
- {id:'luna',name:'Luna',emoji:'🌙',un:65,look:{hair:'#c8d8ff',top:'#3a4ab0',skin:'#f0e8ff',hat:'moon'},desc:'Pulls crumbs from afar, forgiving jumps',eff:l=>({mag:4*l,coy:.006*l}),txt:l=>'+'+(4*l)+' magnet, +'+Math.round(6*l)+'ms grace'},
- {id:'rex',name:'Rex',emoji:'🐲',un:80,look:{hair:'#3aa05a',top:'#c8501a',skin:'#a8e08a',hat:'horns'},desc:'A mighty boss-basher',eff:l=>({pow:.12*l}),txt:l=>'+'+Math.round(12*l)+'% boss damage'},
+ {id:'luna',name:'Luna',emoji:'🌙',un:65,look:{hair:'#c8d8ff',top:'#3a4ab0',skin:'#f0e8ff',hat:'moon'},desc:'Pulls crumbs from afar, forgiving jumps',eff:l=>({mag:.8*l,coy:.006*l}),txt:l=>'+'+(.8*l).toFixed(1)+' pickup reach, +'+Math.round(6*l)+'ms grace'},
+ {id:'rex',name:'Rex',emoji:'🐲',un:80,look:{hair:'#3aa05a',top:'#c8501a',skin:'#a8e08a',hat:'horns'},desc:'A mighty boss-basher',eff:l=>({pow:.04*l}),txt:l=>'+'+Math.round(4*l)+'% boss damage'},
  {id:'aurora',name:'Aurora',emoji:'👑',un:95,look:{hair:'#fff0a0',top:'#ff6ac0',skin:'#ffe8d8',hat:'crown'},desc:'A little bit of everything',eff:l=>({inv:.03*l,mag:3*l,pow:.04*l,buff:.04*l,crumb:.03*l}),txt:l=>'+bonuses to safety, magnet, damage, power-ups, crumbs'}
 ];
 const heroById = id => HEROES.find(h=>h.id===id)||HEROES[0];
@@ -1695,7 +1703,7 @@ function drawFollowers(){
     const idx=Math.max(0,H.hist.length-1-(i+1)*8);
     const fy=(H.hist[idx]!==undefined?H.hist[idx]:h.y);
     const bob=Math.abs(Math.sin(H.time*9+i*1.3))*(h.on?5:0);
-    drawSprite(t,heroSX-34-i*(r*1.7+6),fy-r-bob,r);
+    ctx.save();ctx.shadowColor=sparkTint();ctx.shadowBlur=8;drawSprite(t,heroSX-34-i*(r*1.7+6),fy-r-bob,r);ctx.restore();
   }
 }
 
@@ -1803,11 +1811,11 @@ function runResult(){
 }
 function showRunResults(){
  const r=runResult();
- showPanel('Your tale reached…',
- '<div class="result-brand">HOP EVER AFTER</div><img class="story-art" src="assets/story-opening.webp" alt="Wren and friends opening a magical storybook"><div class="result-distance">'+r.pct+'%</div><div class="result-meta">'+(r.boss?'of the boss defeated':'of trail '+r.trail)+' · Realm '+r.realm+' / 100<br>'+r.name+'</div><p>Every great tale takes another try.</p><p class="result-meta">Wish Feathers: '+save.feathers+' / 2 · Discover a new secret to earn one.<br>Spend one to return to your last safe platform with full hearts.</p><div id="shareStatus" class="share-status" role="status"></div>',
+ showPanel('I LOST TO A FAIRY TALE.',
+ '<div class="result-brand">HOP EVER AFTER</div><img class="story-art" src="assets/story-opening.webp" alt="Wren and friends opening a magical storybook"><div class="result-distance">'+r.pct+'%</div><div class="result-meta">'+(r.boss?'of the boss defeated':'of trail '+r.trail)+' · Realm '+r.realm+' / 100<br>'+r.name+'</div><p class="challenge-line">YOUR TURN. BEAT MY RUN.</p><p class="result-meta">One tap. 100 realms. The stories fight back.</p><p class="result-meta">Wish Feathers: '+save.feathers+' / 2 · Discover a new secret to earn one.<br>Spend one to return to your last safe platform with full hearts.</p><div id="shareStatus" class="share-status" role="status"></div>',
  [{label:'Try again',fn:()=>{hidePanel();retry();}},
  {label:'Continue · 1 Wish Feather',disabled:save.feathers<1,cls:'alt',fn:continueRun},
- {label:'Share your tale',cls:'alt',fn:shareRun},
+ {label:'Challenge your friends',cls:'alt',fn:shareRun},
  {label:'World map',cls:'ghost',fn:()=>{hidePanel();H=null;setMode('menu');showMap();}},
  {label:'Main menu',cls:'ghost',fn:toMenu}]);
  panel.classList.add('results');$('pbtns').classList.add('result-actions');
@@ -1823,13 +1831,13 @@ function continueRun(){
  hidePanel();deadMsg.classList.add('hide');heartsStr='';updateHUD();return true;
 }
 async function shareRun(){
- const r=runResult(),text='My tale reached Realm '+r.realm+' in Hop Ever After — '+r.pct+'% '+(r.boss?'of the boss defeated':'through trail '+r.trail)+'. How far can you get?';
+ const r=runResult(),text='I lost to a fairy tale. Beat my run: Realm '+r.realm+' in Hop Ever After — '+r.pct+'% '+(r.boss?'of the boss defeated':'through trail '+r.trail)+'. Hop Ever After — your turn.';
  const status=$('shareStatus');
  try{
  const c=document.createElement('canvas');c.width=1080;c.height=1350;const g=c.getContext('2d');
  const img=resultsArt;await resultsArtReady;if(!img.naturalWidth)throw Error('art unavailable');g.drawImage(img,0,0,img.width,img.height,0,0,1080,720);
- const shade=g.createLinearGradient(0,450,0,850);shade.addColorStop(0,'#08191c00');shade.addColorStop(1,'#08191c');g.fillStyle=shade;g.fillRect(0,450,1080,900);g.fillStyle='#08191c';g.fillRect(0,850,1080,500);
- g.textAlign='center';g.fillStyle='#d9bc80';g.font='28px Georgia';g.fillText('H O P   E V E R   A F T E R',540,785);g.fillStyle='#f4e5bf';g.font='52px Georgia';g.fillText('My tale reached Realm '+r.realm,540,890);g.font='100px Georgia';g.fillText(r.pct+'%',540,1020);g.font='30px Georgia';g.fillText(r.boss?'of the boss defeated':'through trail '+r.trail,540,1080);g.font='42px Georgia';g.fillText('How far can you get?',540,1190);
+ const shade=g.createLinearGradient(0,450,0,850);shade.addColorStop(0,'#08191c00');shade.addColorStop(1,'#08191c');g.fillStyle=shade;g.fillRect(0,450,1080,900);g.fillStyle='#08191c';g.fillRect(0,850,1080,500);g.fillStyle='#10252b';g.fillRect(0,0,1080,180);g.fillStyle='#ffe5a0';g.textAlign='center';g.font='bold 56px Georgia';g.fillText('I LOST TO A FAIRY TALE.',540,110);
+ g.textAlign='center';g.fillStyle='#d9bc80';g.font='28px Georgia';g.fillText('H O P   E V E R   A F T E R',540,785);g.fillStyle='#f4e5bf';g.font='52px Georgia';g.fillText('REALM '+r.realm+' / 100',540,890);g.font='100px Georgia';g.fillText(r.pct+'%',540,1020);g.font='30px Georgia';g.fillText(r.boss?'of the boss defeated':'through trail '+r.trail,540,1080);g.font='42px Georgia';g.fillText('YOUR TURN. BEAT MY RUN.',540,1190);
  const url=location.protocol.startsWith('http')?location.origin+location.pathname:'';g.font='20px system-ui';if(url)g.fillText(url.length>80?'Play Hop Ever After':url,540,1260);
  const blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));if(!blob)throw Error('image');
  const file=new File([blob],'hop-ever-after-my-tale.png',{type:'image/png'});
@@ -1873,6 +1881,8 @@ function addFollower(){
   if(run.party.length>before){ sfx.pick(8); popText(H.hero.x+60,H.hero.y-70,'+Tale Spark','#19d3f0',16); }
 }
 function addTally(n){ if(H&&H.buffs&&H.buffs.dbl>0) n*=2; run.tally+=n; while(run.tally>=sparkCost()){ const cost=sparkCost();run.tally-=cost;addFollower(); } updateHUD(); }
+function pickupReach(passive,surge){return Math.min(88,passive+(surge?32:0));}
+function canAttract(dx,dy,reach){return Math.abs(dy)<=38&&Math.hypot(dx,dy)<reach;}
 function collect(k){
   if(k.tier===4){ k.got=true; spark(k.x,k.y,14,'#7dffb0',170,.5,3); randomPower(); if(!save.seenCap){ save.seenCap=true; persist(); } return; }
   k.got=true; H.combo++; H.comboT=1.5;
@@ -1963,13 +1973,13 @@ function updateHop(dt){
   H.camX=h.x-heroSX;
   H.comboT-=dt; if(H.comboT<=0) H.combo=0;
   if(!boss){
-    const hx=h.x, hy=h.y-26, mag=perks.magnet+(H.buffs.magnet>0?130:0), hx_=h.x;
+    const hx=h.x, hy=h.y-26, mag=pickupReach(perks.magnet,H.buffs.magnet>0), hx_=h.x;
     for(const k of H.picks){
       if(k.got) continue;
       if(k.x<H.camX-60||k.x>H.camX+LW+200){ if(!k.pull) k.y=groundY+k.dy; continue; }
       if(!k.pull) k.y=groundY+k.dy+Math.sin(H.time*4+k.x*.05)*3;
       const dx=hx-k.x, dy=hy-k.y, dd=Math.sqrt(dx*dx+dy*dy);
-      if(dd<mag){ k.pull=true; const f=Math.min(1,dt*(9+(mag-dd)*.05)); k.x+=dx*f; k.y+=dy*f; }
+      if(canAttract(dx,dy,mag)){ k.pull=true; const f=Math.min(1,dt*(9+(mag-dd)*.05)); k.x+=dx*f; k.y+=dy*f; }
       if(dd<24) collect(k);
     }
     if(H.flash>0) H.flash-=dt;
@@ -1977,7 +1987,7 @@ function updateHop(dt){
     if(scr&&!scr.got&&H.state==='play'){
       scr.y=groundY+scr.dy+Math.sin(H.time*3)*4;
       const dxs=hx_-scr.x, dys=hy-scr.y, dds=Math.sqrt(dxs*dxs+dys*dys);
-      if(dds<Math.max(32,mag*.8)) doWarp();
+      if(dds<32) doWarp();
     }
     for(const z of H.haz){
       const py=platY(z.plat);
@@ -2061,7 +2071,7 @@ function updateBoss(dt){
     H.atkT-=1; H.flinch=.18;
     const party=run.party.slice(0,5);
     if(!party.length) boltFx(h.x,h.y-30,H.camX+H.bossX,groundY-90,'#ffffff');
-    party.forEach((t,i)=>{ setTimeout(()=>{ if(H&&H.kind==='boss'&&H.state==='play') boltFx(h.x-30-i*18,h.y-30,H.camX+H.bossX,groundY-90-i*10,['#19d3f0','#ff2fb3','#ffe066','#7dffb0','#fff'][i%5]); },i*70); });
+    party.forEach((t,i)=>{ setTimeout(()=>{ if(H&&H.kind==='boss'&&H.state==='play') boltFx(h.x-30-i*18,h.y-30,H.camX+H.bossX,groundY-90-i*10,sparkTint()); },i*70); });
     sfx.zap();
   }
   if(H.bossHp<=0){
@@ -2164,6 +2174,29 @@ function partySummary(){
  const portraits=active.map(t=>'<img src="'+images[t]+'" alt="Rank '+(t+1)+' Tale Spark">').join('');
  return '<div class="party-portraits">'+portraits+'</div><div class="party-detail"><strong>'+(active.length?'YOUR PARTY · '+active.length+' Tale Sparks · '+power+' attack power':'TALE SPARKS · '+sparkCost()+' crumbs to recruit')+'</strong><small>'+run.tally+'/'+sparkCost()+' crumbs · '+PACTS[run.pact||'gatherer'].name+' · pickup reach '+Math.round(perks.magnet)+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'TALE SPARKS ATTACKING!':'JUMP TO SEND YOUR SPARKS'):' · 3 matching Sparks merge')+'</small></div>';
 }
+const SPARK_STYLES={starlight:{name:'Starlight',color:'#d6eee8',cost:0},rose:{name:'Briar Rose',color:'#e18cae',cost:160},jade:{name:'Jade Lantern',color:'#86d6ad',cost:280},moon:{name:'Moonlit Silver',color:'#bac8ff',cost:450},sun:{name:'Gilded Dawn',color:'#ffce75',cost:650}};
+function sparkTint(){return (SPARK_STYLES[run&&run.sparkStyle]||SPARK_STYLES.starlight).color;}
+const SIGILS={reach:{name:'Wayfinder Sigil',desc:'+2 pickup reach per level. All reach bonuses share the 56-unit passive cap.'},strike:{name:'Duelist Sigil',desc:'+4% Tale Spark attack power per level. Only active while jumping against a boss.'},ward:{name:'Afterglow Sigil',desc:'+0.08 seconds of protection after a hit per level. Does not stop gaps.'}};
+function sigilCost(level){return [140,320,650][level]||0;}
+function buyShop(id){
+ if(H&&H.state==='play')return false;
+ if(id.startsWith('style:')){const key=id.slice(6),style=SPARK_STYLES[key];if(!style||save.sparkStyles.includes(key)||save.stars<style.cost)return false;save.stars-=style.cost;save.sparkStyles.push(key);}
+ else if(id==='feather'){if(save.feathers>=2||save.stars<180)return false;save.stars-=180;save.feathers++;}
+ else {if(!Object.hasOwn(SIGILS,id))return false;const lv=save.sigils[id]||0,cost=sigilCost(lv);if(lv>=3||save.stars<cost)return false;save.stars-=cost;save.sigils[id]=lv+1;}
+ persist();return true;
+}
+function shopAction(id,equip){
+ if(equip&&id.startsWith('style:')){const key=id.slice(6);if(Object.hasOwn(SPARK_STYLES,key)&&save.sparkStyles.includes(key)){save.sparkStyle=key;persist();}}
+ else if(equip){if(Object.hasOwn(SIGILS,id)&&save.sigils[id]>0){save.sigil=save.sigil===id?'':id;persist();}}
+ else buyShop(id);showShop();
+}
+function showShop(){
+ const styles=Object.entries(SPARK_STYLES).map(([id,style])=>{const owned=save.sparkStyles.includes(id);return '<article class="shop-item"><div class="shop-level">TALE SPARK AURA · COSMETIC ONLY</div><h3 style="color:'+style.color+'">✦ '+style.name+'</h3><p>Colors your followers’ glow and party attack bolts. No stat bonus.</p><button class="btn ghost" '+(owned?'data-equip':'data-buy')+'="style:'+id+'" '+(!owned&&save.stars<style.cost?'disabled':'')+'>'+(owned?(save.sparkStyle===id?'Equipped':'Equip'):style.cost+' stars · Unlock')+'</button></article>';}).join('');
+ const cards=Object.entries(SIGILS).map(([id,item])=>{const lv=save.sigils[id]||0,cost=sigilCost(lv);return '<article class="shop-item"><div class="shop-level">TALE SPARK SIGIL · LEVEL '+lv+' / 3</div><h3>'+item.name+'</h3><p>'+item.desc+'</p><button class="btn" data-buy="'+id+'" '+(lv>=3||save.stars<cost?'disabled':'')+'>'+(lv>=3?'Fully upgraded':cost+' stars · Upgrade')+'</button><button class="btn ghost" data-equip="'+id+'" '+(!lv?'disabled':'')+'>'+(save.sigil===id?'Equipped · Remove':'Equip')+'</button></article>';}).join('');
+ showPanel('The Wishkeeper’s Shop','<p class="eyebrow">EARN YOUR EDGE. CHOOSE YOUR BUILD.</p><div class="stat"><span>Your stars</span><b>'+save.stars+'</b></div><p class="result-meta">Earn stars by clearing trails and discovering secrets. Sigil upgrades are permanent. Equip one sigil; its bonuses apply when you begin a realm. Sigils work alongside your chosen Tale Spark pact.</p>'+cards+'<p class="eyebrow">AURAS TO COLLECT · NO POWER ADVANTAGE</p>'+styles+'<article class="shop-item"><div class="shop-level">CONTINUE ITEM · '+save.feathers+' / 2 HELD</div><h3>Wish Feather</h3><p>One second chance from the last safe platform. Also earned from discovering a new secret.</p><button class="btn" data-buy="feather" '+(save.feathers>=2||save.stars<180?'disabled':'')+'>180 stars · Buy</button></article>',[{label:'Tale Sparks & pacts',cls:'alt',fn:()=>showSparks(()=>showShop())},{label:'Main menu',cls:'ghost',fn:()=>hidePanel()}]);
+}
+$('bShop').addEventListener('click',showShop);
+$('pbody').addEventListener('click',e=>{const buy=e.target.closest('[data-buy]'),equip=e.target.closest('[data-equip]');if(buy&&!buy.disabled)shopAction(buy.dataset.buy,false);if(equip&&!equip.disabled)shopAction(equip.dataset.equip,true);});
 function showSparks(back){
  const selected=save.pact||'gatherer';
  showPanel('Tale Sparks', '<p class="eyebrow">CHOOSE HOW YOUR STORY GROWS</p><div class="friend-primer"><b>Recruit. Merge. Shape your party.</b><span>Recruitment costs 12 crumbs, rising by 2 after every two recruits, up to 24. Gatherers pay 2 fewer. Three matching Sparks merge, up to rank 6. Your five strongest fight beside you.</span><span>Each rank contributes 1 / 3 / 7 / 15 / 31 / 63 attack power. Jump to trigger 1.2 seconds of attacks against bosses. Collection routes, combos and double-crumb bonuses help you build a different party.</span></div>'+Object.entries(PACTS).map(([id,p])=>'<div class="pact-option '+(selected===id?'chosen':'')+'"><b>'+p.name+(selected===id?' · SELECTED':'')+'</b><p>'+p.desc+'</p></div>').join('')+'<p class="result-meta">Pacts apply when you begin a realm. Current runs and retries keep their original pact. Merges grant magnet, shield, double crumbs, star, then star + shield by rank. Sparks never heal you or protect against gaps.</p>',
@@ -2342,6 +2375,8 @@ function drawWinds(camX){
   }
 }
 function drawPickup(k,camX){
+ if(!k.got&&k.tier!==4){const px=k.x-camX;ctx.save();ctx.translate(px,k.y);ctx.rotate(Math.PI/4);ctx.fillStyle='#142e39';ctx.strokeStyle=k.tier===2?'#ffeaa1':'#dfb65d';ctx.lineWidth=1.5;const size=k.tier===2?15:11;ctx.fillRect(-size,-size,size*2,size*2);ctx.strokeRect(-size,-size,size*2,size*2);ctx.restore();}
+
   if(k.got) return; const sx=k.x-camX; if(sx>LW+30||sx<-30) return;
   if(k.tier===4){
     const y=k.y+Math.sin(H.time*4+k.x)*4, g=ctx.createRadialGradient(sx,y,2,sx,y,28); g.addColorStop(0,'rgba(125,255,176,.6)'); g.addColorStop(1,'rgba(125,255,176,0)'); ctx.fillStyle=g; ctx.fillRect(sx-30,y-30,60,60);
@@ -2381,7 +2416,7 @@ function drawGate(x,y,label){
 
 /* ============================== RENDER: BOSSES ============================== */
 function eyes(x,y,col,s){ for(const sd of [-1,1]){ ctx.fillStyle=col; ctx.beginPath(); ctx.ellipse(x+sd*s*10,y,s*5,s*7,0,0,7); ctx.fill(); ctx.fillStyle='#2a1020'; ctx.beginPath(); ctx.arc(x+sd*s*10-1,y+1,s*2.4,0,7); ctx.fill(); } }
-function bossFacing(kind){return kind==='brute'||kind==='dragon'?-1:1;}
+function bossFacing(kind){return ['caster','brute','dragon'].includes(kind)?-1:1;}
 function drawBoss(B,bx,by,t,flinch,sc,alpha,rot){
  if(artAtlas.complete&&artAtlas.naturalWidth){ctx.save();ctx.translate(bx,by);ctx.scale(bossFacing(B.kind)*sc,sc);ctx.rotate(rot||0);ctx.globalAlpha=alpha;ctx.shadowColor=flinch>0?'#fff':'#69cbb766';ctx.shadowBlur=flinch>0?20:8;art(ctx,8+({caster:0,brute:1,dragon:2,blob:3}[B.kind]||0),-110,-250+Math.sin(t*2.2)*4,220,250,ri%6*12);ctx.restore();return;}
 
@@ -2517,7 +2552,7 @@ function renderHop(){
     const hy=H.hero.y-28;
     if(H.buffs.star>0){ const g=ctx.createRadialGradient(heroSX,hy,6,heroSX,hy,54); const c=Math.floor(H.time*360)%360; g.addColorStop(0,'hsla('+c+',100%,70%,.55)'); g.addColorStop(1,'hsla('+c+',100%,70%,0)'); ctx.fillStyle=g; ctx.fillRect(heroSX-56,hy-56,112,112); }
     if(H.buffs.shield>0){ ctx.strokeStyle='rgba(120,235,255,.9)'; ctx.fillStyle='rgba(120,235,255,.18)'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(heroSX,hy,34+Math.sin(H.time*6)*1.5,0,7); ctx.fill(); ctx.stroke(); }
-    if(H.buffs.magnet>0){ ctx.strokeStyle='rgba(255,120,220,.5)'; ctx.lineWidth=2; ctx.setLineDash([6,8]); ctx.lineDashOffset=-H.time*30; ctx.beginPath(); ctx.arc(heroSX,hy,perks.magnet+130>150?150:perks.magnet+130,0,7); ctx.stroke(); ctx.setLineDash([]); }
+    if(H.buffs.magnet>0){ ctx.strokeStyle='rgba(255,120,220,.5)'; ctx.lineWidth=2; ctx.setLineDash([6,8]); ctx.lineDashOffset=-H.time*30; ctx.beginPath(); ctx.arc(heroSX,hy,pickupReach(perks.magnet,true),0,7); ctx.stroke(); ctx.setLineDash([]); }
   }
   if(H.state!=='dead'||H.deadT<.15) drawHero(heroSX,H.hero.y,H.hero.anim,!H.hero.on,H.hero.vy,H.hero.sq,H.hero.inv);
   else drawHero(heroSX,H.hero.y,H.hero.anim,true,0,0,0);

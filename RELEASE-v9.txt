@@ -1,0 +1,15 @@
+HOP EVER AFTER — THE WISHKEEPER UPDATE
+
+Upload these files over the existing GitHub Pages version. No live deployment was performed. Existing progress, hero levels and stars are retained. New shop inventory starts empty except the free Starlight aura.
+
+FACING: All 100 realm bosses use audited shared facing metadata: 33 casters, 42 brutes, 10 dragons face left toward the player; 15 front-facing spectral bosses retain orientation. The Ice Queen and both sizes of every caster now use the correction.
+
+COLLECTION BALANCE: Crumb gains 1.2 pickup reach per hero level instead of 6; Luna gains 0.8 instead of 4. Base reach is 28; Tale Spark ranks add at most 12; Gatherer adds 8. Total passive reach caps at 56, including hero and shop bonuses. Magnet surge adds 32, total capped at 88, and attraction only occurs within 38 vertical units. Secrets require direct approach within 32 units regardless of magnet. Shields cap at two. Mabel party damage rises 3% per level; Rex 4%; hero party-damage bonuses cap at 40%. These are tuning changes, not a proof that no strategy can dominate.
+
+READABILITY: Lantern particles now appear as dim blue streaks, fireflies are dimmer and blue. Standard collectible crumbs have a gold diamond enclosure. Shapes as well as color separate actionable pickups from ambient particles.
+
+RESULTS & SHARING: I LOST TO A FAIRY TALE. / YOUR TURN. BEAT MY RUN. Challenge card has a bold contrasting headline band, actual realm/trail or boss progress, game branding and hosted play URL. No fabricated ranking, popularity or global percentile is used. No claim of guaranteed virality. Sharing remains player initiated.
+
+SHOP: Earned stars only. Three permanent Tale Spark sigil tracks, three levels each (140/320/650 stars), only one equipped per realm run: Wayfinder +2 reach per level under the shared cap; Duelist +4% Spark damage per level; Afterglow +0.08 seconds of post-hit protection per level under the shared cap. Five aura styles (one free, four unlocks at 160/280/450/650 stars) change follower glow and party attack colors, with no power advantage. Wish Feathers cost 180 stars and cap at two held; discovery rewards remain. Purchases validate currency and caps, reject duplicate cosmetics and cannot occur during live play. Equipment takes effect next realm.
+
+CHECKS: JavaScript syntax; 100-realm facing coverage; shop affordability and cap transactions, duplicate cosmetic rejection, no mid-run buys, magnet and vertical limits, Tale Spark merging and pact differences, gap deaths and continue behavior. Native share and mobile visual playtesting remain pending.
