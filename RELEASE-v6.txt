@@ -1,0 +1,13 @@
+HOP EVER AFTER — ONE MORE CHAPTER
+
+Replace the GitHub Pages repository files with this package. No live GitHub deployment was performed. Existing progress is preserved; existing saves start with zero Wish Feathers.
+
+RESULTS: Defeat opens a branded results title screen with realm, trail progress or boss damage, Try again, Continue, Share your tale, World map and Main menu. Canvas taps no longer instantly retry. Keyboard focus enters the results buttons. Retry restarts the trail or boss; continue preserves the current attempt.
+
+WISH FEATHERS: One earned for a newly discovered secret, maximum two held. Spending one restores full hearts at the last stable normal platform (or boss arena), with two seconds of hazard protection. No automatic resurrection; gaps remain fatal. A secret already discovered cannot be farmed for feathers. A full inventory does not bank additional feathers.
+
+SHARING: The player explicitly selects Share your tale. A 1080x1350 branded PNG challenge card is generated. Compatible devices open the system share sheet; otherwise the image downloads. The card reports current realm and current trail progress or boss damage, not total game completion. Local-file previews omit the game URL; hosted builds use the current page URL.
+
+ART & SCREENS: Reworked main-menu branding, shared panel styling, generated story-opening illustration, prologue/chapter/storybook art from the existing environment library. Artwork is shared across related realms, not a unique illustration for every story scene. Built-in image generator prompt: Wren in a teal cloak, gingerbread companion and raven scholar beside an illuminated book whose pages become a golden path to a castle, cinematic fairy tale teal/amber materials, no text.
+
+CHECKS: JavaScript syntax, gap survival regressions and continue transaction/checkpoint checks. Browser/mobile visual and native-share testing remain pending.
