@@ -105,6 +105,16 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 #pbody .story-art{background:#10272b;contain:layout paint}
 @media(max-width:600px){#menu .card{padding:22px;max-width:390px}.title-logo{max-height:190px}#menu{background-position:35% center}.party-portraits img{width:24px;height:30px}#partyStatus{gap:6px;font-size:11px}}
 @media(max-height:680px){.title-logo{max-height:120px}#menu .card{padding:16px 24px}.tag{margin:8px 0;font-size:13px}.eyebrow{margin:4px}.btn{margin-top:7px}}
+
+#menu .card{max-height:100%;overflow-y:auto;touch-action:pan-y}
+#map,#panel,#menu{padding: max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));height:100%;height:100dvh;overflow:hidden}
+#map .mapbox{height:100%;max-height:100%;min-height:0;width:min(680px,100%);padding:16px;background:#0c2025f5;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mapbox h1,.mapbox .btabs,#bMapBack{flex-shrink:0}.rlist{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain}#bMapBack{margin:8px 0 0;min-height:48px;background:#17353b}
+#panel .card{display:flex;flex-direction:column;max-height:100%;height:auto;overflow:hidden;min-height:0;padding:18px;width:min(720px,100%)}#ptitle{flex:0 0 auto;margin:0 0 12px}#pbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:0 6px 6px}#pbtns{flex:0 0 auto;max-height:38dvh;overflow-y:auto;touch-action:pan-y;padding:8px 4px 4px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-top:1px solid var(--line);margin-top:10px}#pbtns .btn{margin:0;font-size:13px;min-height:46px}#pbtns .btn:last-child{grid-column:1/-1}
+button.rcard{width:100%;color:inherit;font-family:inherit;text-align:left}.btabs button{min-width:36px;min-height:40px;padding:5px;background:#17353b;border:1px solid var(--line);border-radius:5px;color:#dcd7bb;cursor:pointer}.btabs button.on{background:#bea06c;color:#10252b}.btabs button.dn{border-color:#e0c184}
+.hero-detail{display:grid;grid-template-columns:140px 1fr;align-items:center;text-align:left;gap:20px;background:radial-gradient(ellipse at 20% 60%,#527c7344,transparent 70%),#ffffff04;border:1px solid var(--line);border-radius:8px;padding:16px;margin:12px 0}.hero-detail>img{width:140px;height:180px;object-fit:contain;filter:drop-shadow(0 8px 12px #0006)}.hero-detail h2{font:28px Georgia;margin:0 0 8px;color:#e8d3a3}.hero-detail p{font:13px/1.6 system-ui}.hg{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important}.hg button.cell{color:#d6dfd3;font-family:system-ui;min-height:95px;border:1px solid #c3a36c33;border-radius:7px;background:#152e33;padding:7px!important;cursor:pointer}.hg .cell img{width:58px!important;height:68px!important}.hg .cell.sel{background:#36554f;border-color:#e2c588}.hg .cell.lk img{filter:grayscale(.85) brightness(.65)}.hg .cell i{color:#e5d5a3}.pact-option{padding:12px;text-align:left;border:1px solid var(--line);border-radius:6px;margin:8px 0}.pact-option.chosen{background:#638e7c22;border-color:#d5b87c}.pact-option p{font:13px system-ui}
+@media(max-width:500px){.hg{grid-template-columns:repeat(3,minmax(0,1fr))!important}.hero-detail{grid-template-columns:100px 1fr;gap:12px;padding:10px}.hero-detail>img{width:100px;height:150px}.hero-detail h2{font-size:24px}#map .mapbox{padding:12px}.mapbox h1{font-size:22px}.btabs{gap:4px}#panel .card{padding:12px}}
+@media(max-height:450px){#ptitle{font-size:22px!important;margin-bottom:6px}#pbtns{max-height:36dvh}.mapbox h1{font-size:20px}.btabs button{min-height:32px}#map .mapbox{padding:8px}#bMapBack{min-height:42px}}
 </style>
 </head>
 <body>
@@ -124,18 +134,18 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 <div id="menu">
   <div class="card">
     <p class="eyebrow">A TALE WORTH TRYING AGAIN</p><h1 class="logo"><img class="title-logo" src="assets/title-logo.webp" width="1100" height="570" fetchpriority="high" alt="Hop Ever After"><small>100 REALMS · ONE MORE CHAPTER</small></h1>
-    <p class="tag">Every leap writes your legend.<br>Gather friends. Defy the ending.</p>
+    <p class="tag">Every leap writes your legend.<br>Gather Tale Sparks. Defy the ending.</p>
     <button class="btn" id="bPlay">▶ Play</button>
     <button class="btn alt" id="bMap">🗺️ World Map</button>
     <button class="btn alt" id="bHero">🧙 Heroes</button>
-    <button class="btn alt" id="bFriends">How your friends help</button>
+    <button class="btn alt" id="bFriends">Tale Sparks & pacts</button>
     <button class="btn ghost" id="bBook">📖 Storybook</button>
     <p id="menuStat" style="font-size:14px;color:#cdbbf0;margin-top:12px"></p>
   </div>
 </div>
 
-<div id="map" class="hide"><div class="mapbox"><h1>🗺️ World Map</h1><div class="btabs" id="btabs"></div><div class="rlist" id="rlist"></div><button class="btn ghost" id="bMapBack">← Back</button></div></div>
-<div id="panel" class="hide"><div class="card"><h1 id="ptitle"></h1><div id="pbody"></div><div id="pbtns"></div></div></div>
+<div id="map" class="hide" role="dialog" aria-modal="true" aria-label="World Map"><div class="mapbox"><h1>🗺️ World Map</h1><div class="btabs" id="btabs"></div><div class="rlist" id="rlist"></div><button class="btn ghost" id="bMapBack">← Main menu</button></div></div>
+<div id="panel" class="hide" role="dialog" aria-modal="true" aria-labelledby="ptitle"><div class="card"><h1 id="ptitle"></h1><div id="pbody"></div><div id="pbtns"></div></div></div>
 <div id="fade"></div>
 
 <script>
@@ -152,6 +162,7 @@ const BOOKS = ['Crumbs & Beanstalks','The Wishing Pages','Slippers & Thread','Wh
 const SAVE_KEY = 'hopeverafter_v2';
 const save = { cleared:Array(NR).fill(false), disc:{}, clears:0, deaths:0, bestRealm:0, sound:true, seenHop:false, seenSec:false, seenCap:false, sec:{}, read:0, stars:0, hero:'wren', lv:{} };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s && Array.isArray(s.cleared)) Object.assign(save, s); } catch (e) {}
+if(!['gatherer','guardian','striker'].includes(save.pact))save.pact='gatherer';
 save.feathers=Math.min(2,Math.max(0,Math.floor(Number(save.feathers)||0)));
 if(!save.sec) save.sec={}; if(!save.lv) save.lv={}; if(!save.hero) save.hero='wren'; if(typeof save.stars!=='number') save.stars=0;
 while(save.cleared.length<NR) save.cleared.push(false);
@@ -1357,18 +1368,22 @@ function drawFx(camX){
 const game = { mode:'menu', t:0 };
 let H = null, run = null, perks = { hearts:3, magnet:42, power:0, best:-1, lines:[] };
 let heartsStr='', cntStr='';
-function newRun(){ run = { party:[], tally:0, snap:{}, score:0, deaths:0, t0:Date.now(), bossHp:0 }; perks=computePerks([]); }
+function newRun(){ run = { party:[], tally:0, recruited:0, pact:save.pact||'gatherer', snap:{}, score:0, deaths:0, t0:Date.now(), bossHp:0 }; perks=computePerks([]); }
+const SPARK_POWER=[1,3,7,15,31,63];
+const PACTS={gatherer:{name:'Gatherer',desc:'Recruit for 2 fewer crumbs; +20 pickup reach.'},guardian:{name:'Guardian',desc:'Start each trail with one extra hazard shield.'},striker:{name:'Striker',desc:'Tale Sparks deal 35% more boss damage.'}};
+function sparkCost(){return Math.min(24,12+Math.floor((run.recruited||0)/2)*2)-((run.pact||'gatherer')==='gatherer'?2:0);}
 function computePerks(party){
   const best=party.length?Math.max.apply(null,party):-1;
   let hearts=3;
   // Friend progression improves collection and attacks, never refills health.
   const top5=party.slice(0,5);
   const sumT=top5.reduce((a,t)=>a+t,0);
-  const magnet=Math.min(110,42+sumT*5);
-  const power=top5.reduce((a,t)=>a+Math.pow(2,t),0);
+  const pact=run&&run.pact||save.pact||'gatherer';
+  const magnet=Math.min(110,42+sumT*5+(pact==='gatherer'?20:0));
+  const power=top5.reduce((a,t)=>a+SPARK_POWER[t],0)*(pact==='striker'?1.35:1);
   const E=heroEff();
   return { hearts:hearts+(E.hearts||0), magnet:Math.min(160,magnet+(E.mag||0)), power:power*(1+(E.pow||0)), best,
-    inv:E.inv||0, coy:E.coy||0, buff:E.buff||0, crumb:E.crumb||0, merge:E.merge||0, shield:E.shield||0 };
+    inv:E.inv||0, coy:E.coy||0, buff:E.buff||0, crumb:E.crumb||0, merge:E.merge||0, shield:(E.shield||0)+(pact==='guardian'?1:0) };
 }
 
 /* ============================== DOM HELPERS ============================== */
@@ -1403,7 +1418,7 @@ let buffStr='';
 function updateHUD(){
   if(!H) return;
   const status=$('partyStatus');status.classList.toggle('hide',!['play','end'].includes(H.state));
-  const partyKey=H.kind+':'+run.party.join(',')+':'+run.tally+':'+Math.round(perks.magnet)+':'+((H.partyAttack||0)>0);
+  const partyKey=H.kind+':'+run.party.join(',')+':'+run.tally+':'+Math.round(perks.magnet)+':'+((H.partyAttack||0)>0)+':'+run.pact;
   if(status.dataset.partyKey!==partyKey){status.dataset.partyKey=partyKey;status.innerHTML=partySummary();}
   if(H.buffs){ const b=H.buffs, a=[]; if(b.shield>0) a.push('🛡️'+(b.shield>1?'×'+b.shield:'')); if(b.magnet>0) a.push('🧲'+Math.ceil(b.magnet)); if(b.star>0) a.push('⭐'+Math.ceil(b.star)); if(b.dbl>0) a.push('✖2 '+Math.ceil(b.dbl)); const t=a.join('  '); if(t!==buffStr){ buffStr=t; $('buffs').textContent=t; } }
   const hs=[]; for(let i=0;i<H.maxHearts;i++) hs.push(i<H.hearts?'❤️':'🖤');
@@ -1411,7 +1426,7 @@ function updateHUD(){
   if(H.kind==='hop'){
     progFill.style.width=(clamp(H.hero.x/H.endX,0,1)*100).toFixed(1)+'%';
     progTxt.textContent=RM.emoji+' Trail '+(H.idx+1)+' of '+trailsOf(ri);
-    const c=RM.emoji+' '+run.tally+'/6'; if(c!==cntStr){ cntStr=c; cntEl.textContent=c; }
+    const c=RM.emoji+' '+run.tally+'/'+sparkCost(); if(c!==cntStr){ cntStr=c; cntEl.textContent=c; }
   } else bossFill.style.width=clamp(H.bossHp/H.bossMax*100,0,100).toFixed(1)+'%';
 }
 $('mute').addEventListener('click',()=>{ save.sound=!save.sound; $('mute').textContent=save.sound?'🔊':'🔇'; persist(); ac(); });
@@ -1668,8 +1683,8 @@ function drawHero(x,y,t,air,vy,sq,inv,g,hero){
 const HPREV={};
 function heroPreview(h){
   if(HPREV[h.id]) return HPREV[h.id];
-  const c=document.createElement('canvas'); c.width=72; c.height=96; let u='';
-  try{ const g=c.getContext('2d'); drawHero(36,90,0,false,0,0,0,g,h); u=c.toDataURL(); }catch(e){}
+  const c=document.createElement('canvas'); c.width=216; c.height=288; let u='';
+  try{ const g=c.getContext('2d');g.scale(3,3); drawHero(36,90,0,false,0,0,0,g,h); u=c.toDataURL(); }catch(e){}
   return HPREV[h.id]=u;
 }
 function drawFollowers(){
@@ -1690,8 +1705,8 @@ function startRealm(i){
   menu.classList.add('hide'); mapEl.classList.add('hide');
   const ch=NOVEL.ch[i], T=trailsOf(i); novelK=i;
   showPanel(RM.emoji+' Chapter '+(i+1)+'<br><span style="font-size:22px">'+ch[0]+'</span>',
-    '<div class="friend-primer"><b>YOUR FRIENDS MAKE YOU STRONGER</b><span>6 crumbs → 1 friend. Two matching friends → a stronger friend.</span><span>Friends pull crumbs closer. Jump in boss fights to send them attacking.</span><span>Ranks contribute 1 · 2 · 4 · 8 · 16 · 32 attack power.</span></div><p style="font-style:italic;font-size:15.5px;text-align:left">'+ch[1]+'</p><p style="color:#19d3f0;font-weight:700;font-size:14px;margin-top:10px">'+RM.name+' · Twist: '+RM.twist+'</p><p style="font-size:13px;color:#cdbbf0">'+T+' trails · 🔑 '+secInfo(i)+' secrets · a mini-boss · then the boss</p>',
-    [{label:'Hop!',fn:()=>{ fadeTo(()=>{ hidePanel(); startHop(0); }); }},{label:'← World Map',cls:'ghost',fn:()=>{ hidePanel(); showMap(); }}]);
+    '<div class="friend-primer"><b>TALE SPARKS · YOUR STORY COMPANIONS</b><span>Recruitment starts at 10–12 crumbs and grows as you recruit. Three matching Tale Sparks merge.</span><span>Tale Sparks pull crumbs closer. Jump in boss fights to send them attacking.</span><span>Ranks contribute 1 · 3 · 7 · 15 · 31 · 63 attack power.</span></div><p style="font-style:italic;font-size:15.5px;text-align:left">'+ch[1]+'</p><p style="color:#19d3f0;font-weight:700;font-size:14px;margin-top:10px">'+RM.name+' · Twist: '+RM.twist+'</p><p style="font-size:13px;color:#cdbbf0">'+T+' trails · 🔑 '+secInfo(i)+' secrets · a mini-boss · then the boss</p>',
+    [{label:'Choose Tale Spark pact',cls:'alt',fn:()=>showSparks(()=>startRealm(i))},{label:'Hop!',fn:()=>{ fadeTo(()=>{ hidePanel(); startHop(0); }); }},{label:'← World Map',cls:'ghost',fn:()=>{ hidePanel(); showMap(); }}]);
   setMode('menu'); hud.classList.add('hide'); $('partyStatus').classList.add('hide'); H=null;
 }
 function showPrologue(next){
@@ -1712,8 +1727,8 @@ function showNovel(k){
 function RM_boss(k){ return REALMS[k].boss.name; }
 function startHop(idx){
   if(!run.snap) run.snap={};
-  if(run.snap[idx]){ run.party=run.snap[idx].party.slice(); run.tally=run.snap[idx].tally; }
-  else run.snap[idx]={party:run.party.slice(),tally:run.tally};
+  if(run.snap[idx]){ run.party=run.snap[idx].party.slice(); run.tally=run.snap[idx].tally;run.recruited=run.snap[idx].recruited||0; }
+  else run.snap[idx]={party:run.party.slice(),tally:run.tally,recruited:run.recruited||0};
   perks=computePerks(run.party);
   const cfg=stretchCfg(ri,idx), g=genStretch(ri,idx);
   H={ kind:'hop', idx, cfg, secret:g.secret, flash:0, buffs:{shield:perks.shield|0,magnet:0,star:0,dbl:0}, plats:g.plats, picks:g.picks, haz:g.haz, winds:g.winds, len:cfg.len,
@@ -1725,9 +1740,9 @@ function startHop(idx){
   H.hero.y=H.plats[0].y; H.camX=H.hero.x-heroSX;
   setMode('hop'); hidePanel(); menu.classList.add('hide'); mapEl.classList.add('hide');
   updateHUD();
-  if(ri===0&&idx===0&&!save.seenHop){ showTip('TAP to hop<br>TAP again mid-air for a double hop<br><span style="font-size:15px;color:#19d3f0">hold = higher · every 6 '+RM.emoji+' adds a friend<br>matching friends MERGE on their own · gaps are fatal</span>',5600); save.seenHop=true; persist(); }
+  if(ri===0&&idx===0&&!save.seenHop){ showTip('TAP to hop<br>TAP again mid-air for a double hop<br><span style="font-size:15px;color:#19d3f0">hold = higher · recruit Tale Sparks with crumbs<br>matching Tale Sparks MERGE on their own · gaps are fatal</span>',5600); save.seenHop=true; persist(); }
   else if(idx===0) showTip(RM.name+'<br><span style="font-size:15px;color:#19d3f0">'+RM.twist+'</span>',3000);
-  else showTip('Trail '+(idx+1)+' of '+trailsOf(ri)+(run.party.length?'<br><span style="font-size:15px;color:#19d3f0">your party is following you</span>':''),2000);
+  else showTip('Trail '+(idx+1)+' of '+trailsOf(ri)+(run.party.length?'<br><span style="font-size:15px;color:#19d3f0">your Tale Sparks follow you</span>':''),2000);
 }
 
 /* ============================== HOP: INPUT ============================== */
@@ -1837,27 +1852,27 @@ function announceMerge(t){
   sfx.merge(t); buzz(20); ringFx(h.x,h.y-30,'#ffe066'); spark(h.x-30,h.y-24,10+t*3,['#ffe066','#19d3f0','#ff2fb3'][t%3],170,.6,3);
   popText(h.x+80,h.y-96,RM.chain[t]+'!','#ffe066',22);
   mergePower(t);
-  showTip('FRIENDS MERGED · RANK '+(t+1)+'<br><span style="font-size:15px">'+(['','Magnet: pulls nearby crumbs','Shield: blocks one hazard','Double crumbs: recruit faster','Star: temporary hazard protection','Star + shield'][t])+' · team power '+Math.pow(2,t)+'</span>',2600);
+  showTip('TALE SPARKS MERGED · RANK '+(t+1)+'<br><span style="font-size:15px">'+(['','Magnet: pulls nearby crumbs','Shield: blocks one hazard','Double crumbs: recruit faster','Star: temporary hazard protection','Star + shield'][t])+' · team power '+SPARK_POWER[t]+'</span>',2600);
   const id=RM.id; if(!save.disc[id]) save.disc[id]=[true,false,false,false,false,false];
   save.disc[id][t]=true; persist();
 }
 function addFollower(){
   const before=run.party.length;
-  run.party.push(0);
+  run.party.push(0);run.recruited=(run.recruited||0)+1;
   let again=true;
   while(again){
     again=false; run.party.sort((a,b)=>a-b);
-    for(let i=0;i<run.party.length-1;i++){
-      if(run.party[i]===run.party[i+1]&&run.party[i]<5){ const t=run.party[i]+1; run.party.splice(i,2,t); again=true; announceMerge(t); break; }
+    for(let i=0;i<run.party.length-2;i++){
+      if(run.party[i]===run.party[i+1]&&run.party[i]===run.party[i+2]&&run.party[i]<5){ const t=run.party[i]+1; run.party.splice(i,3,t); again=true; announceMerge(t); break; }
     }
   }
   run.party.sort((a,b)=>b-a);
   const pk=computePerks(run.party);
-  // Friends never add or refill hearts during a trail.
+  // Tale Sparks never add or refill hearts during a trail.
   perks=pk;
-  if(run.party.length>before){ sfx.pick(8); popText(H.hero.x+60,H.hero.y-70,'+friend','#19d3f0',16); }
+  if(run.party.length>before){ sfx.pick(8); popText(H.hero.x+60,H.hero.y-70,'+Tale Spark','#19d3f0',16); }
 }
-function addTally(n){ if(H&&H.buffs&&H.buffs.dbl>0) n*=2; run.tally+=n; while(run.tally>=6){ run.tally-=6; addFollower(); } updateHUD(); }
+function addTally(n){ if(H&&H.buffs&&H.buffs.dbl>0) n*=2; run.tally+=n; while(run.tally>=sparkCost()){ const cost=sparkCost();run.tally-=cost;addFollower(); } updateHUD(); }
 function collect(k){
   if(k.tier===4){ k.got=true; spark(k.x,k.y,14,'#7dffb0',170,.5,3); randomPower(); if(!save.seenCap){ save.seenCap=true; persist(); } return; }
   k.got=true; H.combo++; H.comboT=1.5;
@@ -2086,7 +2101,7 @@ function miniWon(){
   fadeTo(()=>{
     startHop(n); run.snap[n]=null;
     addTally(6); awardStars(40); popText(H.hero.x+60,H.hero.y-110,'MINI-BOSS REWARD!','#ffe066',22);
-    run.snap[n]={party:run.party.slice(),tally:run.tally};
+    run.snap[n]={party:run.party.slice(),tally:run.tally,recruited:run.recruited||0};
   });
 }
 function showVictory(){
@@ -2095,7 +2110,7 @@ function showVictory(){
   const secs=Math.round((Date.now()-run.t0)/1000), mm=Math.floor(secs/60), ss=String(secs%60).padStart(2,'0');
   const last=ri>=NR-1;
   const body='<p style="font-style:italic;font-size:15px;text-align:left">'+NOVEL.ch[ri][2]+'</p>'+(last?NOVEL.epilogue.map(p=>'<p style="font-style:italic;font-size:15px;text-align:left;color:#ffe066">'+p+'</p>').join(''):'')+'<p><b>You beat '+RM.boss.name+'!</b></p>'+partyRow(run.party)+
-    '<div class="stat"><span>Best friend</span><b>'+(run.party.length?RM.chain[Math.max.apply(null,run.party)]:'—')+'</b></div>'+
+    '<div class="stat"><span>Strongest Tale Spark</span><b>'+(run.party.length?RM.chain[Math.max.apply(null,run.party)]:'—')+'</b></div>'+
     '<div class="stat"><span>Oopsies</span><b>'+run.deaths+'×</b></div>'+'<div class="stat"><span>⭐ Stars earned</span><b>'+(run.stars||0)+'</b></div>'+
     '<div class="stat"><span>Time</span><b>'+mm+':'+ss+'</b></div>'+
     '<div class="stat"><span>Realms cleared</span><b>'+save.clears+' / '+NR+'</b></div>'+
@@ -2111,16 +2126,16 @@ let mapBook=0;
 function secInfo(i){ let tot=0,got=0; for(let t=0;t<trailsOf(i);t++) if((i+t)%3===0){ tot++; if(save.sec[i+':'+t]) got++; } return got+'/'+tot; }
 function showMap(b){
   const cur=firstOpen(); mapBook=b==null?Math.floor(cur/10):b;
-  $('btabs').innerHTML=ROMAN.map((r,i)=>{ const dn=save.cleared.slice(i*10,i*10+10).every(Boolean); return '<b class="'+(i===mapBook?'on':'')+' '+(dn?'dn':'')+'" data-b="'+i+'">'+r+'</b>'; }).join('');
+  $('btabs').innerHTML=ROMAN.map((r,i)=>{ const dn=save.cleared.slice(i*10,i*10+10).every(Boolean); return '<button type="button" aria-label="Book '+(i+1)+'" class="'+(i===mapBook?'on':'')+' '+(dn?'dn':'')+'" data-b="'+i+'">'+r+'</button>'; }).join('');
   let html='<div class="bhead">Book '+ROMAN[mapBook]+' · '+BOOKS[mapBook]+'</div>';
   for(let i=mapBook*10;i<mapBook*10+10;i++){
     const rm=REALMS[i], open=i===0||save.cleared[i-1], done=save.cleared[i];
-    html+='<div class="rcard '+(open?'':'lock')+' '+(done?'done':'')+' '+(i===cur?'cur':'')+'" data-i="'+i+'"><i>'+rm.emoji+'</i><div><b>'+(i+1)+'. '+rm.name+'</b><span>'+(open?rm.blurb:'Clear the previous realm to unlock')+'</span>'+(open?'<u>'+trailsOf(i)+' trails · 🔑 '+secInfo(i)+'</u>':'')+'</div><em>'+(!open?'🔒':done?'⭐':'▶')+'</em></div>';
+    html+='<button type="button" class="rcard '+(open?'':'lock')+' '+(done?'done':'')+' '+(i===cur?'cur':'')+'" data-i="'+i+'"><i>'+rm.emoji+'</i><div><b>'+(i+1)+'. '+rm.name+'</b><span>'+(open?rm.blurb:'Clear the previous realm to unlock')+'</span>'+(open?'<u>'+trailsOf(i)+' trails · 🔑 '+secInfo(i)+'</u>':'')+'</div><em>'+(!open?'🔒':done?'⭐':'▶')+'</em></button>';
   }
   $('rlist').innerHTML=html; $('rlist').scrollTop=0;
-  menu.classList.add('hide'); mapEl.classList.remove('hide');
+  menu.classList.add('hide'); mapEl.classList.remove('hide');$('bMapBack').focus({preventScroll:true});
 }
-$('btabs').addEventListener('click',e=>{ const t=e.target.closest('b'); if(t) showMap(+t.dataset.b); });
+$('btabs').addEventListener('click',e=>{ const t=e.target.closest('[data-b]'); if(t) showMap(+t.dataset.b); });
 function firstOpen(){ for(let i=0;i<NR;i++) if(!save.cleared[i]) return i; return NR-1; }
 $('rlist').addEventListener('click',e=>{
   const c=e.target.closest('.rcard'); if(!c) return; ac();
@@ -2132,7 +2147,7 @@ function showBook(i){
   i=clamp(i==null?firstOpen():i,0,NR-1);
   const rm=REALMS[i], sp=getSpr(i), d=save.disc[rm.id]||[false,false,false,false,false,false];
   const cells=rm.chain.map((n,t)=>'<div class="cell '+(d[t]?'':'no')+'"><img src="'+sp.u[t]+'" alt="">'+(d[t]?n:'???')+'</div>').join('');
-  showPanel('📖 Storybook','<p>'+rm.emoji+' <b>'+rm.name+'</b><br><span style="font-size:13px">Grab '+rm.emoji+' on the trail to discover each friend</span></p><div class="grid">'+cells+'</div>'+
+  showPanel('📖 Storybook','<p>'+rm.emoji+' <b>'+rm.name+'</b><br><span style="font-size:13px">Grab '+rm.emoji+' on the trail to discover each Tale Spark</span></p><div class="grid">'+cells+'</div>'+
     '<div class="stat"><span>Realms cleared</span><b>'+save.clears+' / '+NR+'</b></div>',
     [{label:'◀ Prev',cls:'alt',fn:()=>showBook((i+NR-1)%NR)},{label:'Next ▶',cls:'alt',fn:()=>showBook((i+1)%NR)},{label:'📜 Read the Novel',cls:'alt',fn:()=>showNovel()},{label:'Close',cls:'ghost',fn:()=>hidePanel()}]);
 }
@@ -2145,30 +2160,46 @@ function refreshMenu(){
 $('bPlay').addEventListener('click',()=>{ ac(); fadeTo(()=>{ const i=firstOpen(); if(!save.read&&i===0){ showPrologue(()=>fadeTo(()=>startRealm(0))); } else startRealm(i); }); });
 $('bMap').addEventListener('click',()=>{ ac(); showMap(); });
 function partySummary(){
- const active=run.party.slice(0,5),power=active.reduce((a,t)=>a+Math.pow(2,t),0),images=getSpr(ri).u;
- const portraits=active.map(t=>'<img src="'+images[t]+'" alt="Rank '+(t+1)+' friend">').join('');
- return '<div class="party-portraits">'+portraits+'</div><div class="party-detail"><strong>'+(active.length?'YOUR PARTY · '+active.length+' friends · '+power+' attack power':'GATHER YOUR PARTY · 6 crumbs recruit a friend')+'</strong><small>'+run.tally+'/6 crumbs · pickup reach '+Math.round(perks.magnet)+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'FRIENDS ATTACKING!':'JUMP TO SEND YOUR FRIENDS'):' · matching friends merge for bonuses')+'</small></div>';
+ const active=run.party.slice(0,5),power=Math.round(perks.power),images=getSpr(ri).u;
+ const portraits=active.map(t=>'<img src="'+images[t]+'" alt="Rank '+(t+1)+' Tale Spark">').join('');
+ return '<div class="party-portraits">'+portraits+'</div><div class="party-detail"><strong>'+(active.length?'YOUR PARTY · '+active.length+' Tale Sparks · '+power+' attack power':'TALE SPARKS · '+sparkCost()+' crumbs to recruit')+'</strong><small>'+run.tally+'/'+sparkCost()+' crumbs · '+PACTS[run.pact||'gatherer'].name+' · pickup reach '+Math.round(perks.magnet)+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'TALE SPARKS ATTACKING!':'JUMP TO SEND YOUR SPARKS'):' · 3 matching Sparks merge')+'</small></div>';
 }
-$('bFriends').addEventListener('click',()=>showPanel('Friends & survival',
- '<p>Wish Feathers let you continue after defeat. Earn one from each newly discovered secret; carry up to two. Retry is always free and restarts the current trail or boss.</p><p>Tap or Space to jump. Tap again in the air for a double jump. Hold for height. Falling into a gap ends the attempt, even with a shield or star.</p><p>Every 6 crumbs recruits a rank-1 friend. Two matching friends automatically merge into one of the next rank, up to rank 6. Your five strongest friends are active.</p><p>Active friends increase pickup range and team attack power: ranks 1–6 contribute 1, 2, 4, 8, 16 and 32 power.</p><p>Merge rewards: rank 2 → magnet; rank 3 → shield; rank 4 → double crumbs; rank 5 → star; rank 6 → star + shield. Friends never refill hearts. Shields and stars protect against hazards only.</p><p>Boss fights: each jump opens a 1.2-second party attack window. Stronger friends deal more damage. Keep jumping to attack while dodging shots. Friends carry between trails in this realm; retry restores the trail-start party.</p>',[{label:'Got it',fn:()=>hidePanel()}]));
+function showSparks(back){
+ const selected=save.pact||'gatherer';
+ showPanel('Tale Sparks', '<p class="eyebrow">CHOOSE HOW YOUR STORY GROWS</p><div class="friend-primer"><b>Recruit. Merge. Shape your party.</b><span>Recruitment costs 12 crumbs, rising by 2 after every two recruits, up to 24. Gatherers pay 2 fewer. Three matching Sparks merge, up to rank 6. Your five strongest fight beside you.</span><span>Each rank contributes 1 / 3 / 7 / 15 / 31 / 63 attack power. Jump to trigger 1.2 seconds of attacks against bosses. Collection routes, combos and double-crumb bonuses help you build a different party.</span></div>'+Object.entries(PACTS).map(([id,p])=>'<div class="pact-option '+(selected===id?'chosen':'')+'"><b>'+p.name+(selected===id?' · SELECTED':'')+'</b><p>'+p.desc+'</p></div>').join('')+'<p class="result-meta">Pacts apply when you begin a realm. Current runs and retries keep their original pact. Merges grant magnet, shield, double crumbs, star, then star + shield by rank. Sparks never heal you or protect against gaps.</p>',
+ Object.entries(PACTS).map(([id,p])=>({label:(selected===id?'✓ ':'')+p.name,cls:selected===id?'alt':'ghost',fn:()=>{save.pact=id;persist();showSparks(back);}})).concat([{label:'Back',cls:'ghost',fn:()=>{hidePanel();if(back)back();}}]));
+}
+$('bFriends').addEventListener('click',()=>showSparks());
 $('bBook').addEventListener('click',()=>{ ac(); showBook(); });
 function showHeroes(sel){
   sel=sel||save.hero; const sh=heroById(sel), unl=save.clears>=sh.un, lv=heroLv(sh.id);
-  const cells=HEROES.map(h=>{ const u=save.clears>=h.un; return '<div class="cell hcell '+(h.id===sel?'sel':'')+' '+(u?'':'lk')+'" data-h="'+h.id+'">'+(h.id===save.hero?'<i>✔</i>':'')+'<img src="'+heroPreview(h)+'" alt="">'+(u?h.name:'🔒')+'</div>'; }).join('');
+  const cells=HEROES.map(h=>{ const u=save.clears>=h.un; return '<button type="button" class="cell hcell '+(h.id===sel?'sel':'')+' '+(u?'':'lk')+'" data-h="'+h.id+'">'+(h.id===save.hero?'<i>✔</i>':'')+'<img src="'+heroPreview(h)+'" alt="">'+h.name+(u?'':' · Locked')+'</button>'; }).join('');
   const cost=upCost(lv), canUp=unl&&lv<10&&save.stars>=cost;
-  const body='<div class="stat"><span>⭐ Stars</span><b>'+save.stars+'</b></div><div class="grid hg">'+cells+'</div>'+
-    '<p style="margin-top:8px"><b>'+sh.emoji+' '+sh.name+'</b> · Level '+(unl?lv:'—')+(unl&&lv>=10?' (MAX)':'')+'</p>'+
+  const body='<p class="eyebrow">THE KEEPERS OF YOUR TALE</p><div class="stat"><span>⭐ Stars</span><b>'+save.stars+'</b></div><div class="grid hg">'+cells+'</div>'+
+    '<div class="hero-detail"><img src="'+heroPreview(sh)+'" alt="'+sh.name+' portrait"><div><h2>'+sh.name+'</h2><p>'+(unl?'Level '+lv+(sh.id===save.hero?' · Equipped':''):'Unlock at '+sh.un+' realms')+'</p><p>'+sh.desc+'</p></div></div>'+
     '<div class="bar2"><u style="width:'+(unl?lv*10:0)+'%"></u></div>'+
     '<p style="font-size:14px;color:#cdbbf0">'+sh.desc+'</p>'+
     (unl?'<p style="font-size:15px;color:#19d3f0;font-weight:700">Now: '+sh.txt(lv)+(lv<10?'<br><span style="color:#ffe066">Next: '+sh.txt(lv+1)+'</span>':'')+'</p>':'<p style="color:#ffe066;font-weight:700">Unlocks after you clear '+sh.un+' realm'+(sh.un===1?'':'s')+'<br><span style="font-size:13px;color:#cdbbf0">(you have cleared '+save.clears+')</span></p>');
   const btns=[];
-  if(unl&&sh.id!==save.hero) btns.push({label:'Play as '+sh.name,fn:()=>{ save.hero=sh.id; persist(); showHeroes(sh.id); }});
-  if(unl&&lv<10) btns.push({label:(canUp?'⬆ Level up':'🔒 Level up')+' · '+cost+' ⭐',cls:canUp?'alt':'ghost',fn:()=>{ if(save.stars>=cost){ save.stars-=cost; save.lv[sh.id]=lv+1; persist(); } showHeroes(sh.id); }});
-  btns.push({label:'Close',cls:'ghost',fn:()=>{ hidePanel(); }});
+  if(unl&&sh.id!==save.hero) btns.push({label:'Equip '+sh.name,fn:()=>{ save.hero=sh.id; persist(); showHeroes(sh.id); }});
+  if(unl&&lv<10) btns.push({label:(canUp?'⬆ Level up':'🔒 Level up')+' · '+cost+' ⭐',cls:canUp?'alt':'ghost',disabled:!canUp,fn:()=>{ if(save.stars>=cost){ save.stars-=cost; save.lv[sh.id]=lv+1; persist(); } showHeroes(sh.id); }});
+  btns.push({label:'← Main menu',cls:'ghost',fn:()=>{ hidePanel();$('bHero').focus(); }});
   showPanel('🧙 Heroes',body,btns);
 }
 $('bHero').addEventListener('click',()=>{ ac(); showHeroes(); });
 $('pbody').addEventListener('click',e=>{ const c=e.target.closest('.hcell'); if(c) showHeroes(c.dataset.h); });
+
+function visibleOverlay(){return !panel.classList.contains('hide')?panel:!mapEl.classList.contains('hide')?mapEl:!menu.classList.contains('hide')?menu:null;}
+window.addEventListener('keydown',e=>{
+ const root=visibleOverlay();if(!root)return;
+ if(e.key==='Escape'){e.preventDefault();if(root===panel&&H&&H.state==='dead')toMenu();else if(root===panel){const exits=[...$('pbtns').querySelectorAll('button:not(:disabled)')];if(exits.length)exits[exits.length-1].click();else hidePanel();}else if(root===mapEl){mapEl.classList.add('hide');menu.classList.remove('hide');refreshMenu();$('bMap').focus();}return;}
+ if(e.key==='Tab'){
+ const buttons=[...root.querySelectorAll('button:not(:disabled),[href],select')].filter(el=>el.offsetParent!==null);
+ if(!buttons.length)return;const first=buttons[0],last=buttons[buttons.length-1];
+ if(e.shiftKey&&(document.activeElement===first||!root.contains(document.activeElement))){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&(document.activeElement===last||!root.contains(document.activeElement))){e.preventDefault();first.focus();}
+ }
+});
 
 /* ============================== INPUT ============================== */
 cv.addEventListener('pointerdown',e=>{
@@ -2350,8 +2381,9 @@ function drawGate(x,y,label){
 
 /* ============================== RENDER: BOSSES ============================== */
 function eyes(x,y,col,s){ for(const sd of [-1,1]){ ctx.fillStyle=col; ctx.beginPath(); ctx.ellipse(x+sd*s*10,y,s*5,s*7,0,0,7); ctx.fill(); ctx.fillStyle='#2a1020'; ctx.beginPath(); ctx.arc(x+sd*s*10-1,y+1,s*2.4,0,7); ctx.fill(); } }
+function bossFacing(kind){return kind==='brute'||kind==='dragon'?-1:1;}
 function drawBoss(B,bx,by,t,flinch,sc,alpha,rot){
- if(artAtlas.complete&&artAtlas.naturalWidth){ctx.save();ctx.translate(bx,by);ctx.scale(sc,sc);ctx.rotate(rot||0);ctx.globalAlpha=alpha;ctx.shadowColor=flinch>0?'#fff':'#69cbb766';ctx.shadowBlur=flinch>0?20:8;art(ctx,8+({caster:0,brute:1,dragon:2,blob:3}[B.kind]||0),-110,-250+Math.sin(t*2.2)*4,220,250,ri%6*12);ctx.restore();return;}
+ if(artAtlas.complete&&artAtlas.naturalWidth){ctx.save();ctx.translate(bx,by);ctx.scale(bossFacing(B.kind)*sc,sc);ctx.rotate(rot||0);ctx.globalAlpha=alpha;ctx.shadowColor=flinch>0?'#fff':'#69cbb766';ctx.shadowBlur=flinch>0?20:8;art(ctx,8+({caster:0,brute:1,dragon:2,blob:3}[B.kind]||0),-110,-250+Math.sin(t*2.2)*4,220,250,ri%6*12);ctx.restore();return;}
 
   ctx.save(); ctx.translate(bx,by); ctx.scale(sc,sc); if(rot) ctx.rotate(rot); ctx.globalAlpha=alpha;
   const bob=Math.sin(t*2.2)*4, fl=flinch>0?(Math.random()-.5)*8:0;

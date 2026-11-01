@@ -1,0 +1,15 @@
+HOP EVER AFTER — TALE SPARKS & NAVIGATION
+
+Upload this package over your GitHub Pages files. Live deployment was not performed. Existing realm progress and hero upgrades remain. Saves default to the Gatherer pact; party changes apply on a new realm run.
+
+BOSS FACING: Right-facing brute and dragon atlas artwork is mirrored to face the player on the left. Shared renderer covers both mini-boss and final-boss fights. Caster/spectral front-facing art remains unchanged.
+
+TALE SPARKS: Consistent collection identity throughout menus, tutorial and HUD. Authored story prose retains natural uses of friend/friends. Recruitment now costs 12 crumbs, increasing by 2 after every two recruits to a cap of 24. Three matching ranks merge, rather than two. Recruitment count is stored in trail snapshots so retry cannot reset recruitment cost while preserving the party. Rank power is 1,3,7,15,31,63; five strongest are active. Existing pickups, combos and routes reward collection skill.
+
+PACTS: Gatherer costs 2 fewer crumbs per recruitment and adds 20 pickup reach. Guardian starts each trail with one extra hazard shield. Striker adds 35% to Tale Spark boss attack power. Choose a pact from the menu or chapter introduction; it is locked for the active run. No random rewards were added; identical choices and collection still yield identical parties. This balance pass needs player feedback, especially for late bosses.
+
+NAVIGATION: Dynamic viewport and safe-area spacing; World Map header, tabs and 48px exit remain separate from the scrolling list. Shared panels have scrolling bodies and separate action areas. Action areas can scroll on very short displays. Map chapters, realm cards and hero portraits use real buttons. Escape returns through the relevant exit action; Tab stays within the visible overlay. Main menu scrolls on short displays.
+
+HEROES: Larger portrait detail panel, higher-resolution previews, named hero buttons even when locked, clearer equipped state, upgrade affordability and consistent exit action. Disabled unaffordable upgrades.
+
+CHECKS: JavaScript syntax; recruitment, triple-merge, cost caps, distinct pact benefits, 150-crumb outcomes, no health grants, boss-facing mapping; existing survival and continue checks. Local browser visual preview was blocked by browser file-URL policy, so responsive visual QA on actual devices remains pending. No claim of rendered viewport verification.
