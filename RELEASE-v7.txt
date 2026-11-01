@@ -1,0 +1,17 @@
+HOP EVER AFTER — RELIABLE LEAPS & TITLE POLISH
+
+Replace the contents of your GitHub Pages repository with this package. No live deployment was performed. Existing progress is preserved.
+
+SPRINGS: Widened following landing platforms to at least 560 game units, limited the gap to 100, and limited upward height change. Validation now includes first foot overlap at the leading edge of the spring, and does not require a double jump to reach a spring landing. Removed the generator's unchecked fallback; failures now throw instead of quietly creating an unverified transition.
+
+OTHER TERRAIN: Moving-platform vertical travel reduced from 34 to 12 units. Ghost platforms now stay solid until stepped on, then warn and collapse after 0.9 seconds, so their availability is not determined by an unseen global phase.
+
+AUDIT: All 100 realms / 800 trails / 31,488 adjacent platform transitions passed the reachability check at 30 and 60 FPS and low/mid/high speed bounds. All 1,742 spring exits also passed direct simulation through the actual updateHop runtime at both frame rates with real variable run speed, early pad overlap and no input after bounce. These are movement checks; they do not prove every combined hazard sequence or optimal path, and device playtesting remains necessary.
+
+TITLE: New generated gold-and-teal illuminated-book logo, cinematic title background, unified action hierarchy, responsive sizing. Built-in image generation prompt: exact HOP EVER AFTER text, engraved golden serif lettering, teal enamel, illuminated book and crescent emblem, genuine transparent background.
+
+RESULTS: Story artwork optimized to 261,242 bytes in WebP, preloaded and decoded at boot. Main Play unlocks after decode; share card reuses that decoded asset. Logo optimized to WebP.
+
+FRIENDS: Larger live party panel with portraits, active count, power and pickup range; prominent How your friends help button; chapter-start benefit primer; explicit merge reward messages. Existing earned Wish Feather continues and free retry remain intact.
+
+CHECKS: Syntax, survival, continue transactions, generation audit and runtime spring audit. Browser visual QA, touch-device layout and native-sharing testing remain pending.

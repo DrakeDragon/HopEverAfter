@@ -1,5 +1,5 @@
-const CACHE='hop-ever-after-tales-v6';
-const FILES=['./','./index.html','./assets/animation/crumb.png','./assets/animation/quill.png','./assets/animation/pip.png','./assets/animation/wren.png','./assets/animation/rook.png','./assets/animation/mabel.png','./assets/story-opening.png','./assets/atlas.png','./assets/worlds.png','./assets/enchanted-forest.png','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE='hop-ever-after-polish-v7';
+const FILES=['./','./index.html','./assets/animation/crumb.png','./assets/animation/quill.png','./assets/animation/pip.png','./assets/animation/wren.png','./assets/animation/rook.png','./assets/animation/mabel.png','./assets/story-opening.webp','./assets/title-logo.webp','./assets/atlas.png','./assets/worlds.png','./assets/enchanted-forest.png','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r;}).catch(()=>caches.match(e.request).then(m=>m||caches.match('./index.html')))); });

@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#12052a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Hop Ever After</title>
+<link rel="preload" as="image" href="assets/story-opening.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/title-logo.webp" fetchpriority="high">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -95,6 +97,14 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 .result-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.result-actions .btn{margin-top:0}.result-actions .btn:first-child{grid-column:1/-1}.btn:disabled{opacity:.42;cursor:default;transform:none}.btn:focus-visible{outline:3px solid #f1d695;outline-offset:3px}
 .share-status{font:12px system-ui;color:var(--muted);min-height:18px}.story-copy{text-align:left;font-size:16px;line-height:1.7}.story-art-wrap{height:180px;border-radius:6px;background-size:300% 200%;margin-bottom:18px;border:1px solid var(--line)}
 @media(max-height:650px){.story-art{max-height:140px}.result-distance{font-size:36px}#panel .card{padding:16px}.btn{padding:11px}}
+
+#menu{background:linear-gradient(90deg,#041014db 0%,#04101499 40%,#04101422 100%),url(assets/story-opening.webp) center/cover no-repeat}
+#menu .card{width:min(520px,100%);background:linear-gradient(145deg,#0c2025ed,#07151ae8);border:1px solid #d7b77370;box-shadow:0 30px 100px #000a;padding:26px 32px;backdrop-filter:blur(16px)}
+.title-logo{width:100%;height:auto;max-height:240px;object-fit:contain;display:block;filter:drop-shadow(0 5px 12px #0008)}.logo small{font-size:10px;letter-spacing:3px;margin-top:12px}.tag{margin:14px 0 20px}
+#partyStatus{font-size:13px;padding:9px 12px;display:flex;align-items:center;gap:10px;min-height:64px}.party-portraits{display:flex;flex-shrink:0}.party-portraits img{width:32px;height:36px;object-fit:contain;border:1px solid #c3a36c55;background:#ffffff08;border-radius:5px;margin-right:3px}.party-detail strong{color:#f4d998;font-size:13px}.party-detail small{display:block;font-size:11px;color:#c3d4cc}.friend-primer{background:#bad9c00b;border:1px solid #c3a36c44;padding:12px;border-radius:6px;text-align:left;font:13px/1.6 system-ui;margin:14px 0}.friend-primer b{color:#e4c686}.friend-primer span{display:block}
+#pbody .story-art{background:#10272b;contain:layout paint}
+@media(max-width:600px){#menu .card{padding:22px;max-width:390px}.title-logo{max-height:190px}#menu{background-position:35% center}.party-portraits img{width:24px;height:30px}#partyStatus{gap:6px;font-size:11px}}
+@media(max-height:680px){.title-logo{max-height:120px}#menu .card{padding:16px 24px}.tag{margin:8px 0;font-size:13px}.eyebrow{margin:4px}.btn{margin-top:7px}}
 </style>
 </head>
 <body>
@@ -113,12 +123,12 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 
 <div id="menu">
   <div class="card">
-    <p class="eyebrow">A TALE WORTH TRYING AGAIN</p><h1 class="logo">HOP<br>EVER AFTER<small>100 REALMS · ONE MORE CHAPTER</small></h1>
+    <p class="eyebrow">A TALE WORTH TRYING AGAIN</p><h1 class="logo"><img class="title-logo" src="assets/title-logo.webp" width="1100" height="570" fetchpriority="high" alt="Hop Ever After"><small>100 REALMS · ONE MORE CHAPTER</small></h1>
     <p class="tag">Every leap writes your legend.<br>Gather friends. Defy the ending.</p>
     <button class="btn" id="bPlay">▶ Play</button>
     <button class="btn alt" id="bMap">🗺️ World Map</button>
     <button class="btn alt" id="bHero">🧙 Heroes</button>
-    <button class="btn ghost" id="bFriends">Friends & survival guide</button>
+    <button class="btn alt" id="bFriends">How your friends help</button>
     <button class="btn ghost" id="bBook">📖 Storybook</button>
     <p id="menuStat" style="font-size:14px;color:#cdbbf0;margin-top:12px"></p>
   </div>
@@ -132,6 +142,7 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 (() => {
 'use strict';
 const $ = id => document.getElementById(id);
+const resultsArt=new Image();resultsArt.src='assets/story-opening.webp';const resultsArtReady=resultsArt.decode().catch(()=>{});
 
 /* ============================== SAVE ============================== */
 const NR = 100;
@@ -1392,7 +1403,8 @@ let buffStr='';
 function updateHUD(){
   if(!H) return;
   const status=$('partyStatus');status.classList.toggle('hide',!['play','end'].includes(H.state));
-  status.textContent=partySummary();
+  const partyKey=H.kind+':'+run.party.join(',')+':'+run.tally+':'+Math.round(perks.magnet)+':'+((H.partyAttack||0)>0);
+  if(status.dataset.partyKey!==partyKey){status.dataset.partyKey=partyKey;status.innerHTML=partySummary();}
   if(H.buffs){ const b=H.buffs, a=[]; if(b.shield>0) a.push('🛡️'+(b.shield>1?'×'+b.shield:'')); if(b.magnet>0) a.push('🧲'+Math.ceil(b.magnet)); if(b.star>0) a.push('⭐'+Math.ceil(b.star)); if(b.dbl>0) a.push('✖2 '+Math.ceil(b.dbl)); const t=a.join('  '); if(t!==buffStr){ buffStr=t; $('buffs').textContent=t; } }
   const hs=[]; for(let i=0;i<H.maxHearts;i++) hs.push(i<H.hearts?'❤️':'🖤');
   const s=hs.join(''); if(s!==heartsStr){ heartsStr=s; heartsEl.textContent=s; }
@@ -1407,8 +1419,8 @@ $('mute').textContent=save.sound?'🔊':'🔇';
 
 /* ============================== LEVEL PHYSICS CHECK ============================== */
 // Mirrors the real hop physics so every generated jump is guaranteed beatable.
-function sim(xs,ys,vy0,speed,B,dbl,wz,pre,cutT){
-  let x=xs,y=ys,vy=0,cutDone=!(cutT>=0); const dt=1/120;
+function sim(xs,ys,vy0,speed,B,dbl,wz,pre,cutT,step){
+  let x=xs,y=ys,vy=0,cutDone=!(cutT>=0); const dt=step||1/60;
   for(let a=0;a<pre;a+=dt){ vy+=G*1.22*dt; y+=vy*dt; x+=speed*dt; }
   vy=vy0; let used=false;
   for(let i=0;i<480;i++){
@@ -1426,21 +1438,21 @@ function sim(xs,ys,vy0,speed,B,dbl,wz,pre,cutT){
 }
 const DBLS=[-1]; for(let d=.05;d<=1.01;d+=.05) DBLS.push(d);
 const CUTS=[-1,.07,.11,.15,.2,.27];
-function pairOK(A,B,SP,wz){
+function pairOK(A,B,SP,wz,step=1/30){
   const ya=[A.dy], yb=[B.dy];
   if(A.mv) ya.push(A.dy-A.mv,A.dy+A.mv);
   if(B.mv) yb.push(B.dy-B.mv,B.dy+B.mv);
   const edge=A.x+A.w;
   for(const sp of SP) for(const a of ya) for(const b of yb){
     const Bt={x:B.x,w:B.w,y:b};
-    const starts = A.type==='s' ? [[A.x+12,0],[A.x+A.w/2,0],[edge-12,0]] : [[edge,-.05],[edge,0],[edge,.05]];
+    const starts = A.type==='s' ? [[A.x-HW,0],[A.x+12,0],[A.x+A.w/2,0],[edge-12,0]] : [[edge,-.05],[edge,0],[edge,.05]];
     for(const st of starts){
       let ok=false;
       for(const cu of (A.type==='s'?[-1]:CUTS)){
-        for(const d of DBLS){
-          if(A.type==='s') ok=sim(st[0],a,-SPRING_V,sp,Bt,d,wz,0,-1);
-          else if(st[1]<0) ok=sim(edge+st[1]*sp,a,-JV,sp,Bt,d,wz,0,cu);
-          else ok=sim(edge,a,-JV,sp,Bt,d,wz,st[1],cu);
+        for(const d of (A.type==='s'?[-1]:DBLS)){
+          if(A.type==='s') ok=sim(st[0],a,-SPRING_V,sp,Bt,d,wz,0,-1,step);
+          else if(st[1]<0) ok=sim(edge+st[1]*sp,a,-JV,sp,Bt,d,wz,0,cu,step);
+          else ok=sim(edge,a,-JV,sp,Bt,d,wz,st[1],cu,step);
           if(ok) break;
         }
         if(ok) break;
@@ -1460,12 +1472,13 @@ function genStretch(r,s){
   const F=REALMS[r].feats, cfg=stretchCfg(r,s), R=mulberry32(7000+r*131+s*17), rr=(a,b)=>a+R()*(b-a);
   const SP=[cfg.speed0,cfg.speed1], d=cfg.d;
   const plats=[], picks=[], haz=[], winds=[];
-  const mk=(x0,w,dy,type)=>({x:x0,w,dy,y:0,off:0,type:type||'n',st:false,cr:0,fall:false,vy:0,ph:R()*3,mv:type==='m'?34:0,sq:0,solid:true,mph:R()*6});
+  const mk=(x0,w,dy,type)=>({x:x0,w,dy,y:0,off:0,type:type||'n',st:false,cr:0,fall:false,vy:0,ph:R()*3,mv:type==='m'?12:0,sq:0,solid:true,mph:R()*6});
   const pick=(wx,dy,tier)=>picks.push({x:wx,y:0,dy,tier:tier||0,got:false,pull:false});
   const arc=(x0,gap,d0,d1,n,cookie,hi)=>{ for(let i=0;i<n;i++){ const t=(i+1)/(n+1); pick(x0+gap*t,lerp(d0,d1,t)-34-Math.sin(t*Math.PI)*(hi||92),(cookie&&i===Math.floor(n/2))?1:0); } };
   const line=(p,n,h)=>{ for(let i=0;i<n;i++) pick(p.x+50+i*((p.w-100)/Math.max(1,n-1)),p.dy-(h||34),0); };
   function place(gapWant,w,dyWant,type,wind){
     const prev=plats[plats.length-1]; let gap=gapWant, dy=dyWant;
+    if(prev.type==='s'){gap=Math.min(gap,100);w=Math.max(w,560);dy=Math.max(dy,prev.dy-35);}
     for(let k=0;k<14;k++){
       const c=mk(prev.x+prev.w+gap,w,dy,type);
       const wz=wind?[prev.x+prev.w-10,c.x+10]:null;
@@ -1480,7 +1493,7 @@ function genStretch(r,s){
       const c=mk(prev.x+prev.w+gg,Math.max(w,340),prev.dy,'n');
       if(pairOK(prev,c,SP,null)){ plats.push(c); return {p:c,prev,gap:gg,wz:null}; }
     }
-    const c=mk(prev.x+prev.w+12,Math.max(w,340),prev.dy,'n'); plats.push(c); return {p:c,prev,gap:12,wz:null};
+    throw new Error('No reachable platform at realm '+r+' trail '+s);
   }
   plats.push(mk(0,640,0,'n'));
   for(let i=0;i<4;i++) pick(300+i*60,-34,0);
@@ -1677,7 +1690,7 @@ function startRealm(i){
   menu.classList.add('hide'); mapEl.classList.add('hide');
   const ch=NOVEL.ch[i], T=trailsOf(i); novelK=i;
   showPanel(RM.emoji+' Chapter '+(i+1)+'<br><span style="font-size:22px">'+ch[0]+'</span>',
-    '<p style="font-style:italic;font-size:15.5px;text-align:left">'+ch[1]+'</p><p style="color:#19d3f0;font-weight:700;font-size:14px;margin-top:10px">'+RM.name+' · Twist: '+RM.twist+'</p><p style="font-size:13px;color:#cdbbf0">'+T+' trails · 🔑 '+secInfo(i)+' secrets · a mini-boss · then the boss</p>',
+    '<div class="friend-primer"><b>YOUR FRIENDS MAKE YOU STRONGER</b><span>6 crumbs → 1 friend. Two matching friends → a stronger friend.</span><span>Friends pull crumbs closer. Jump in boss fights to send them attacking.</span><span>Ranks contribute 1 · 2 · 4 · 8 · 16 · 32 attack power.</span></div><p style="font-style:italic;font-size:15.5px;text-align:left">'+ch[1]+'</p><p style="color:#19d3f0;font-weight:700;font-size:14px;margin-top:10px">'+RM.name+' · Twist: '+RM.twist+'</p><p style="font-size:13px;color:#cdbbf0">'+T+' trails · 🔑 '+secInfo(i)+' secrets · a mini-boss · then the boss</p>',
     [{label:'Hop!',fn:()=>{ fadeTo(()=>{ hidePanel(); startHop(0); }); }},{label:'← World Map',cls:'ghost',fn:()=>{ hidePanel(); showMap(); }}]);
   setMode('menu'); hud.classList.add('hide'); $('partyStatus').classList.add('hide'); H=null;
 }
@@ -1776,7 +1789,7 @@ function runResult(){
 function showRunResults(){
  const r=runResult();
  showPanel('Your tale reached…',
- '<div class="result-brand">HOP EVER AFTER</div><img class="story-art" src="assets/story-opening.png" alt="Wren and friends opening a magical storybook"><div class="result-distance">'+r.pct+'%</div><div class="result-meta">'+(r.boss?'of the boss defeated':'of trail '+r.trail)+' · Realm '+r.realm+' / 100<br>'+r.name+'</div><p>Every great tale takes another try.</p><p class="result-meta">Wish Feathers: '+save.feathers+' / 2 · Discover a new secret to earn one.<br>Spend one to return to your last safe platform with full hearts.</p><div id="shareStatus" class="share-status" role="status"></div>',
+ '<div class="result-brand">HOP EVER AFTER</div><img class="story-art" src="assets/story-opening.webp" alt="Wren and friends opening a magical storybook"><div class="result-distance">'+r.pct+'%</div><div class="result-meta">'+(r.boss?'of the boss defeated':'of trail '+r.trail)+' · Realm '+r.realm+' / 100<br>'+r.name+'</div><p>Every great tale takes another try.</p><p class="result-meta">Wish Feathers: '+save.feathers+' / 2 · Discover a new secret to earn one.<br>Spend one to return to your last safe platform with full hearts.</p><div id="shareStatus" class="share-status" role="status"></div>',
  [{label:'Try again',fn:()=>{hidePanel();retry();}},
  {label:'Continue · 1 Wish Feather',disabled:save.feathers<1,cls:'alt',fn:continueRun},
  {label:'Share your tale',cls:'alt',fn:shareRun},
@@ -1799,7 +1812,7 @@ async function shareRun(){
  const status=$('shareStatus');
  try{
  const c=document.createElement('canvas');c.width=1080;c.height=1350;const g=c.getContext('2d');
- const img=new Image();img.src='assets/story-opening.png';await img.decode();g.drawImage(img,0,0,img.width,img.height,0,0,1080,720);
+ const img=resultsArt;await resultsArtReady;if(!img.naturalWidth)throw Error('art unavailable');g.drawImage(img,0,0,img.width,img.height,0,0,1080,720);
  const shade=g.createLinearGradient(0,450,0,850);shade.addColorStop(0,'#08191c00');shade.addColorStop(1,'#08191c');g.fillStyle=shade;g.fillRect(0,450,1080,900);g.fillStyle='#08191c';g.fillRect(0,850,1080,500);
  g.textAlign='center';g.fillStyle='#d9bc80';g.font='28px Georgia';g.fillText('H O P   E V E R   A F T E R',540,785);g.fillStyle='#f4e5bf';g.font='52px Georgia';g.fillText('My tale reached Realm '+r.realm,540,890);g.font='100px Georgia';g.fillText(r.pct+'%',540,1020);g.font='30px Georgia';g.fillText(r.boss?'of the boss defeated':'through trail '+r.trail,540,1080);g.font='42px Georgia';g.fillText('How far can you get?',540,1190);
  const url=location.protocol.startsWith('http')?location.origin+location.pathname:'';g.font='20px system-ui';if(url)g.fillText(url.length>80?'Play Hop Ever After':url,540,1260);
@@ -1810,7 +1823,7 @@ async function shareRun(){
  }catch(e){if(e.name!=='AbortError')status.textContent='Sharing is unavailable right now. Your run is saved on this screen.';}
 }
 function storyArt(title){
- if(/Prologue/.test(title))return '<img class="story-art" src="assets/story-opening.png" alt="Wren, Crumb and Quill beginning their story">';
+ if(/Prologue/.test(title))return '<img class="story-art" src="assets/story-opening.webp" alt="Wren, Crumb and Quill beginning their story">';
  const name=(REALMS[novelK>=0&&/Chapter/.test(title)?novelK:ri]||RM).name.toLowerCase();
  const n=/ginger|candy|sugar/.test(name)?0:/bean|sky|cloud/.test(name)?1:/ice|snow|glass|frost/.test(name)?2:/arab|desert|bazaar/.test(name)?3:/mermaid|lagoon|sea|pond/.test(name)?4:/dragon|fire|thunder/.test(name)?5:-1;
  return n<0?'<img class="story-art" src="assets/enchanted-forest.png" alt="An enchanted fairy-tale woodland">':'<div class="story-art-wrap" role="img" aria-label="Illustration of this fairy-tale realm" style="background-image:url(assets/worlds.png);background-position:'+((n%3)*50)+'% '+(n>=3?100:0)+'%"></div>';
@@ -1824,6 +1837,7 @@ function announceMerge(t){
   sfx.merge(t); buzz(20); ringFx(h.x,h.y-30,'#ffe066'); spark(h.x-30,h.y-24,10+t*3,['#ffe066','#19d3f0','#ff2fb3'][t%3],170,.6,3);
   popText(h.x+80,h.y-96,RM.chain[t]+'!','#ffe066',22);
   mergePower(t);
+  showTip('FRIENDS MERGED · RANK '+(t+1)+'<br><span style="font-size:15px">'+(['','Magnet: pulls nearby crumbs','Shield: blocks one hazard','Double crumbs: recruit faster','Star: temporary hazard protection','Star + shield'][t])+' · team power '+Math.pow(2,t)+'</span>',2600);
   const id=RM.id; if(!save.disc[id]) save.disc[id]=[true,false,false,false,false,false];
   save.disc[id][t]=true; persist();
 }
@@ -1892,8 +1906,8 @@ function updateHop(dt){
   h.sq*=(1-Math.min(1,dt*11));
   // moving / ghost platforms
   for(const p of H.plats){
-    if(p.type==='m') p.off=34*Math.sin(H.time*1.3+p.mph);
-    else if(p.type==='g'){ const t=(H.time+p.ph)%3; p.solid=t<2.3; p.warn=t>1.85&&t<2.3; }
+    if(p.type==='m') p.off=12*Math.sin(H.time*1.3+p.mph);
+    else if(p.type==='g'){p.solid=!p.fall;p.warn=!!p.st;}
   }
   if(h.buf>0){ h.buf-=dt; if(h.on||h.coy>0){ h.buf=0; doJump(); } }
   if(!boss&&H.winds.length&&!h.on){ for(const w of H.winds){ if(h.x>w.x0&&h.x<w.x1){ h.vy-=WIND*dt; break; } } }
@@ -1916,7 +1930,7 @@ function updateHop(dt){
     if(!boss&&lp.type==='n'&&lp.w>HW*2+10){H.safePlat=lp;H.safeX=clamp(h.x,lp.x+HW+4,lp.x+lp.w-HW-4);}
     if(!h.on){ sfx.land(); h.sq=.28; spark(h.x,h.y,6,'#fff3fa',110,.3,2.5); }
     h.on=true; h.coy=.1+(perks.coy||0); h.jumps=0;
-    if(lp.type==='c'&&!lp.st){ lp.st=true; lp.cr=.55; }
+    if((lp.type==='c'||lp.type==='g')&&!lp.st){lp.st=true;lp.cr=lp.type==='g'?.9:.55;}
   } else {
     h.on=false; h.coy-=dt;
     if(h.coy<=0&&h.jumps===0) h.jumps=1;
@@ -2131,8 +2145,9 @@ function refreshMenu(){
 $('bPlay').addEventListener('click',()=>{ ac(); fadeTo(()=>{ const i=firstOpen(); if(!save.read&&i===0){ showPrologue(()=>fadeTo(()=>startRealm(0))); } else startRealm(i); }); });
 $('bMap').addEventListener('click',()=>{ ac(); showMap(); });
 function partySummary(){
- const active=run.party.slice(0,5),power=active.reduce((a,t)=>a+Math.pow(2,t),0);
- return 'FRIENDS '+active.length+'/5 active · '+run.tally+'/6 crumbs to next friend · pickup range '+Math.round(perks.magnet)+' · team power '+power+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'PARTY ATTACKING':'JUMP TO ATTACK'):' · gaps are fatal');
+ const active=run.party.slice(0,5),power=active.reduce((a,t)=>a+Math.pow(2,t),0),images=getSpr(ri).u;
+ const portraits=active.map(t=>'<img src="'+images[t]+'" alt="Rank '+(t+1)+' friend">').join('');
+ return '<div class="party-portraits">'+portraits+'</div><div class="party-detail"><strong>'+(active.length?'YOUR PARTY · '+active.length+' friends · '+power+' attack power':'GATHER YOUR PARTY · 6 crumbs recruit a friend')+'</strong><small>'+run.tally+'/6 crumbs · pickup reach '+Math.round(perks.magnet)+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'FRIENDS ATTACKING!':'JUMP TO SEND YOUR FRIENDS'):' · matching friends merge for bonuses')+'</small></div>';
 }
 $('bFriends').addEventListener('click',()=>showPanel('Friends & survival',
  '<p>Wish Feathers let you continue after defeat. Earn one from each newly discovered secret; carry up to two. Retry is always free and restarts the current trail or boss.</p><p>Tap or Space to jump. Tap again in the air for a double jump. Hold for height. Falling into a gap ends the attempt, even with a shield or star.</p><p>Every 6 crumbs recruits a rank-1 friend. Two matching friends automatically merge into one of the next rank, up to rank 6. Your five strongest friends are active.</p><p>Active friends increase pickup range and team attack power: ranks 1–6 contribute 1, 2, 4, 8, 16 and 32 power.</p><p>Merge rewards: rank 2 → magnet; rank 3 → shield; rank 4 → double crumbs; rank 5 → star; rank 6 → star + shield. Friends never refill hearts. Shields and stars protect against hazards only.</p><p>Boss fights: each jump opens a 1.2-second party attack window. Stronger friends deal more damage. Keep jumping to attack while dodging shots. Friends carry between trails in this realm; retry restores the trail-start party.</p>',[{label:'Got it',fn:()=>hidePanel()}]));
@@ -2498,6 +2513,8 @@ function frame(ts){
 // Menu backdrop cycles to the furthest-unlocked realm so the title screen reflects progress.
 ri=Math.min(firstOpen(),NR-1); RM=REALMS[ri]; initBG(); getSpr(ri);
 resize(); refreshMenu();
+// Decode results artwork before a run can begin, avoiding image pop-in after defeat.
+$('bPlay').disabled=true;resultsArtReady.finally(()=>{$('bPlay').disabled=false;});
 requestAnimationFrame(frame);
 window.__HEA = { trailsOf, miniAfter, bossHpFull, game, save, REALMS, stretchCfg, genStretch, pairOK, sim,
   get H(){ return H; }, get run(){ return run; }, get perks(){ return perks; }, get ri(){ return ri; },
