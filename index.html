@@ -85,6 +85,7 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
 #prog{height:12px;border:1px solid #ccb98366}#progfill{background:linear-gradient(90deg,#588f89,#e0c28c)}
 .cell{border-radius:5px;background:#abcfc30c}.card h1,.mapbox h1{text-shadow:none;color:#ead8ae}
 @media(max-width:600px){#menu .card{margin:auto;padding:22px;max-width:360px}.logo{font-size:46px}}
+#partyStatus{position:fixed;bottom:max(10px,env(safe-area-inset-bottom));left:12px;right:12px;z-index:5;pointer-events:none;background:#08191cd9;border:1px solid #bba36b55;border-radius:5px;padding:7px 10px;color:#e5dfc9;font:11px/1.4 system-ui}
 </style>
 </head>
 <body>
@@ -98,7 +99,7 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
   <button id="mute">🔊</button>
 </div>
 <div id="bossbar" class="hide"><span id="bossname"></span><div class="bar"><i id="bossfill"></i></div></div>
-<div id="tip"></div>
+<div id="partyStatus" class="hide" aria-live="polite"></div><div id="tip"></div>
 <div id="deadmsg" class="hide"><b id="deadtitle">CRUMBLED!</b><span id="deadsub">Tap to hop again</span></div>
 
 <div id="menu">
@@ -108,6 +109,7 @@ html,body{font-family:Georgia,'Times New Roman',serif;background:#091619;color:#
     <button class="btn" id="bPlay">▶ Play</button>
     <button class="btn alt" id="bMap">🗺️ World Map</button>
     <button class="btn alt" id="bHero">🧙 Heroes</button>
+    <button class="btn ghost" id="bFriends">Friends & survival guide</button>
     <button class="btn ghost" id="bBook">📖 Storybook</button>
     <p id="menuStat" style="font-size:14px;color:#cdbbf0;margin-top:12px"></p>
   </div>
@@ -1338,8 +1340,7 @@ function newRun(){ run = { party:[], tally:0, snap:{}, score:0, deaths:0, t0:Dat
 function computePerks(party){
   const best=party.length?Math.max.apply(null,party):-1;
   let hearts=3;
-  if(best>=2) hearts++;
-  if(best>=4) hearts++;
+  // Friend progression improves collection and attacks, never refills health.
   const top5=party.slice(0,5);
   const sumT=top5.reduce((a,t)=>a+t,0);
   const magnet=Math.min(110,42+sumT*5);
@@ -1368,6 +1369,7 @@ function setMode(m){
   game.mode=m;
   const play=(m==='hop'||m==='boss');
   hud.classList.toggle('hide',!play);
+  $('partyStatus').classList.toggle('hide',!play);
   $('prog').classList.toggle('hide',m!=='hop');
   $('cnt').classList.toggle('hide',m!=='hop');
   bossbar.classList.toggle('hide',m!=='boss');
@@ -1376,6 +1378,8 @@ function setMode(m){
 let buffStr='';
 function updateHUD(){
   if(!H) return;
+  const status=$('partyStatus');status.classList.toggle('hide',!['play','end'].includes(H.state));
+  status.textContent=partySummary();
   if(H.buffs){ const b=H.buffs, a=[]; if(b.shield>0) a.push('🛡️'+(b.shield>1?'×'+b.shield:'')); if(b.magnet>0) a.push('🧲'+Math.ceil(b.magnet)); if(b.star>0) a.push('⭐'+Math.ceil(b.star)); if(b.dbl>0) a.push('✖2 '+Math.ceil(b.dbl)); const t=a.join('  '); if(t!==buffStr){ buffStr=t; $('buffs').textContent=t; } }
   const hs=[]; for(let i=0;i<H.maxHearts;i++) hs.push(i<H.hearts?'❤️':'🖤');
   const s=hs.join(''); if(s!==heartsStr){ heartsStr=s; heartsEl.textContent=s; }
@@ -1662,7 +1666,7 @@ function startRealm(i){
   showPanel(RM.emoji+' Chapter '+(i+1)+'<br><span style="font-size:22px">'+ch[0]+'</span>',
     '<p style="font-style:italic;font-size:15.5px;text-align:left">'+ch[1]+'</p><p style="color:#19d3f0;font-weight:700;font-size:14px;margin-top:10px">'+RM.name+' · Twist: '+RM.twist+'</p><p style="font-size:13px;color:#cdbbf0">'+T+' trails · 🔑 '+secInfo(i)+' secrets · a mini-boss · then the boss</p>',
     [{label:'Hop!',fn:()=>{ fadeTo(()=>{ hidePanel(); startHop(0); }); }},{label:'← World Map',cls:'ghost',fn:()=>{ hidePanel(); showMap(); }}]);
-  setMode('menu'); hud.classList.add('hide'); H=null;
+  setMode('menu'); hud.classList.add('hide'); $('partyStatus').classList.add('hide'); H=null;
 }
 function showPrologue(next){
   showPanel('📜 '+NOVEL.title+'<br><span style="font-size:18px">Prologue</span>','<p style="font-style:italic;font-size:16px;text-align:left">'+NOVEL.prologue[0]+'</p>',
@@ -1695,13 +1699,14 @@ function startHop(idx){
   H.hero.y=H.plats[0].y; H.camX=H.hero.x-heroSX;
   setMode('hop'); hidePanel(); menu.classList.add('hide'); mapEl.classList.add('hide');
   updateHUD();
-  if(ri===0&&idx===0&&!save.seenHop){ showTip('TAP to hop<br>TAP again mid-air for a double hop<br><span style="font-size:15px;color:#19d3f0">hold = higher · every 6 '+RM.emoji+' adds a friend<br>matching friends MERGE on their own</span>',5600); save.seenHop=true; persist(); }
+  if(ri===0&&idx===0&&!save.seenHop){ showTip('TAP to hop<br>TAP again mid-air for a double hop<br><span style="font-size:15px;color:#19d3f0">hold = higher · every 6 '+RM.emoji+' adds a friend<br>matching friends MERGE on their own · gaps are fatal</span>',5600); save.seenHop=true; persist(); }
   else if(idx===0) showTip(RM.name+'<br><span style="font-size:15px;color:#19d3f0">'+RM.twist+'</span>',3000);
   else showTip('Trail '+(idx+1)+' of '+trailsOf(ri)+(run.party.length?'<br><span style="font-size:15px;color:#19d3f0">your party is following you</span>':''),2000);
 }
 
 /* ============================== HOP: INPUT ============================== */
 function doJump(){
+  H.partyAttack=1.2;
   const h=H.hero;
   h.vy=-JV; h.on=false; h.coy=0; h.jumps=1; h.cut=false; h.sq=-.15;
   sfx.jump(); spark(h.x,h.y,5,'#fff3fa',90,.3,2.5);
@@ -1710,7 +1715,7 @@ function tryJump(){
   if(!H||(H.state!=='play'&&H.state!=='end')) return;
   const h=H.hero; h.hold=true;
   if(h.on||h.coy>0) doJump();
-  else if(h.jumps<2){ h.vy=-JV2; h.jumps=2; h.cut=false; sfx.dbl(); ringFx(h.x,h.y-20,'#19d3f0'); spark(h.x,h.y-10,8,'#19d3f0',120,.4,2.5); }
+  else if(h.jumps<2){ H.partyAttack=1.2; h.vy=-JV2; h.jumps=2; h.cut=false; sfx.dbl(); ringFx(h.x,h.y-20,'#19d3f0'); spark(h.x,h.y-10,8,'#19d3f0',120,.4,2.5); }
   else h.buf=.12;
 }
 function releaseJump(){ if(!H) return; const h=H.hero; h.hold=false; if(!h.cut&&h.vy<-260){ h.vy*=.5; h.cut=true; } }
@@ -1728,9 +1733,9 @@ function givePower(k,d){
 }
 function randomPower(d){ const r=Math.random(); givePower(r<.3?'shield':r<.55?'magnet':r<.7?'star':r<.9?'dbl':'heart',d); }
 function mergePower(t){
-  if(t===1) givePower('shield'); else if(t===2) givePower('magnet'); else if(t===3) givePower('star');
-  else if(t===4){ givePower('heart'); H.buffs.dbl=10*(1+(perks.buff||0)); }
-  else { givePower('star'); H.buffs.shield=Math.min(2,H.buffs.shield+1); }
+  if(t===1) givePower('magnet'); else if(t===2) givePower('shield');
+  else if(t===3) givePower('dbl'); else if(t===4) givePower('star');
+  else { givePower('star'); givePower('shield'); }
   if(Math.random()<(perks.merge||0)) randomPower(26);
 }
 function awardStars(n){ save.stars+=n; run.stars=(run.stars||0)+n; if(H&&H.hero) popText(H.hero.x-30,H.hero.y-132,'+'+n+' ⭐','#ffe066',18); persist(); }
@@ -1775,7 +1780,7 @@ function addFollower(){
   }
   run.party.sort((a,b)=>b-a);
   const pk=computePerks(run.party);
-  if(pk.hearts>H.maxHearts){ H.hearts+=pk.hearts-H.maxHearts; H.maxHearts=pk.hearts; popText(H.hero.x+80,H.hero.y-126,'+1 ❤️','#ff7ad9',22); heartsStr=''; }
+  // Friends never add or refill hearts during a trail.
   perks=pk;
   if(run.party.length>before){ sfx.pick(8); popText(H.hero.x+60,H.hero.y-70,'+friend','#19d3f0',16); }
 }
@@ -1803,12 +1808,11 @@ function doWarp(){
   awardStars(25); addTally(6);
 }
 function ballY(z){ const T=.95, ph=((H.time+z.bt)%T)/T; return platY(z.plat)-z.r-100*4*ph*(1-ph); }
-function respawnAfterFall(){
-  const h=H.hero; let np=null;
-  for(const p of H.plats){ if(p.fall||p.type==='g'||p.type==='m'||p.x+p.w<h.x+120) continue; if(p.x>h.x+30){ np=p; break; } }
-  if(!np) np=H.plats[H.plats.length-1];
-  h.x=Math.max(h.x,np.x+36); h.y=np.y; h.vy=0; h.on=true; h.coy=.1+(perks.coy||0); h.jumps=0;
-  h.inv=Math.max(h.inv,1.6);
+function fallOut(){
+  if(!H||H.state!=='play')return;
+  H.hearts=0; H.combo=0; H.hero.hitAnim=.22;
+  die(); $('deadtitle').textContent='LOST IN THE GAP';
+  $('deadsub').textContent='Gaps are fatal · shields block hazards, not falls · tap to retry';
 }
 const platY = p => p.y+p.off;
 function updateHop(dt){
@@ -1842,7 +1846,7 @@ function updateHop(dt){
     const px=p.x, pr=p.x+p.w, py=platY(p);
     if(h.x+HW>px&&h.x-HW<pr){
       if(h.vy>=0&&prevY<=py+24&&h.y>=py){ h.y=py; h.vy=0; landed=true; lp=p; break; }
-      else if(!boss&&h.y>py+34&&prevY>py+24&&(h.x+HW-px)<28){ h.y=py; h.vy=-260; h.on=false; h.jumps=1; hurt(); break; }
+      
     }
   }
   if(landed&&lp.type==='s'){
@@ -1863,10 +1867,8 @@ function updateHop(dt){
     if(p.fall){ p.vy+=1700*dt; p.off+=p.vy*dt; }
   }
   const fellY=Math.min(groundY+235,LH+20);
-  if(!boss&&h.y>fellY&&H.state!=='dead'){
-    h.inv=0;
-    const ok=hurt();
-    if(H.state!=='dead'){ respawnAfterFall(); if(!ok) h.inv=1.2; }
+  if(!boss&&h.y>fellY&&H.state==='play'){
+    fallOut(); updateFx(dt); updateHUD(); return;
   }
   H.hist.push(h.y); if(H.hist.length>140) H.hist.shift();
   H.camX=h.x-heroSX;
@@ -1911,7 +1913,7 @@ function updateHop(dt){
         }
       }
     }
-    if(H.state==='play'&&h.x>=H.endX){ H.state='end'; H.endT=0; awardStars(8+Math.floor(H.collected.length/12)); sfx.win(); spark(h.x,h.y-30,30,'#ffe066',240,.9,4); popText(h.x,h.y-90,H.idx===trailsOf(ri)-1?'BOSS AHEAD!':(H.idx===miniAfter(ri)?'MINI-BOSS AHEAD!':'TRAIL CLEARED!'),'#19d3f0',24); }
+    if(H.state==='play'&&h.on&&h.x>=H.endX){ H.state='end'; H.endT=0; awardStars(8+Math.floor(H.collected.length/12)); sfx.win(); spark(h.x,h.y-30,30,'#ffe066',240,.9,4); popText(h.x,h.y-90,H.idx===trailsOf(ri)-1?'BOSS AHEAD!':(H.idx===miniAfter(ri)?'MINI-BOSS AHEAD!':'TRAIL CLEARED!'),'#19d3f0',24); }
     if(H.state==='end'){ H.endT+=dt; if(H.endT>1.05&&!H.fadeStart){ H.fadeStart=true; const nx=H.idx; fadeTo(()=>{ if(nx===miniAfter(ri)) startBoss(false,true); else if(nx<trailsOf(ri)-1) startHop(nx+1); else startBoss(false); }); } }
   } else updateBoss(dt);
   updateFx(dt);
@@ -1937,7 +1939,7 @@ function startBoss(isRetry,mini){
   $('bossname').textContent=B.name;
   setMode('boss'); hidePanel(); menu.classList.add('hide'); mapEl.classList.add('hide');
   updateHUD(); sfx.boss();
-  showTip(isRetry?'Round two — it is hurting!':B.name.toUpperCase()+'<br><span style="font-size:15px;color:#19d3f0">hop the ground shots · stay low under the flying ones'+(B.waves?'<br>hop over the big waves':'')+'<br>your party does the fighting</span>',3800);
+  showTip(isRetry?'Round two — it is hurting!':B.name.toUpperCase()+'<br><span style="font-size:15px;color:#19d3f0">hop the ground shots · stay low under the flying ones'+(B.waves?'<br>hop over the big waves':'')+'<br>jump to trigger party attacks · dodge to survive</span>',3800);
 }
 function bossPattern(){
   const ph=H.phase, W=H.boss.waves;
@@ -1951,6 +1953,10 @@ function bossPattern(){
   for(const ty of pat){ H.queue.push({at:H.time+t,type:ty}); t+=step; }
   H.nextPat=H.time+t+(ph===1?1.6:ph===2?1.35:1.15);
 }
+function partyAttackStep(state,dt){
+ const active=Math.min(dt,Math.max(0,state.partyAttack||0));
+ state.partyAttack=Math.max(0,(state.partyAttack||0)-dt);return active;
+}
 function updateBoss(dt){
   const h=H.hero, B=H.boss;
   H.bossX=Math.min(LW-80,heroSX+420);
@@ -1958,8 +1964,10 @@ function updateBoss(dt){
   const hpPct=H.bossHp/H.bossMax;
   const np=hpPct>.66?1:hpPct>.33?2:3;
   if(np>H.phase){ H.phase=np; popText(H.camX+H.bossX,groundY-190,np===2?'Getting angry!':'FINAL FURY!','#ff7ad9',24); sfx.boss(); H.shake=.4; H.queue=[]; H.nextPat=H.time+1.6; }
-  H.bossHp-=H.dps*dt;
-  H.atkT+=dt;
+  // Party attacks require a real jump; standing still cannot defeat a boss.
+  const attack=partyAttackStep(H,dt);
+  H.bossHp-=H.dps*attack;
+  H.atkT+=attack;
   if(H.atkT>=1){
     H.atkT-=1; H.flinch=.18;
     const party=run.party.slice(0,5);
@@ -2062,6 +2070,12 @@ function refreshMenu(){
 }
 $('bPlay').addEventListener('click',()=>{ ac(); fadeTo(()=>{ const i=firstOpen(); if(!save.read&&i===0){ showPrologue(()=>fadeTo(()=>startRealm(0))); } else startRealm(i); }); });
 $('bMap').addEventListener('click',()=>{ ac(); showMap(); });
+function partySummary(){
+ const active=run.party.slice(0,5),power=active.reduce((a,t)=>a+Math.pow(2,t),0);
+ return 'FRIENDS '+active.length+'/5 active · '+run.tally+'/6 crumbs to next friend · pickup range '+Math.round(perks.magnet)+' · team power '+power+(H.kind==='boss'?' · '+((H.partyAttack||0)>0?'PARTY ATTACKING':'JUMP TO ATTACK'):' · gaps are fatal');
+}
+$('bFriends').addEventListener('click',()=>showPanel('Friends & survival',
+ '<p>Tap or Space to jump. Tap again in the air for a double jump. Hold for height. Falling into a gap ends the attempt, even with a shield or star.</p><p>Every 6 crumbs recruits a rank-1 friend. Two matching friends automatically merge into one of the next rank, up to rank 6. Your five strongest friends are active.</p><p>Active friends increase pickup range and team attack power: ranks 1–6 contribute 1, 2, 4, 8, 16 and 32 power.</p><p>Merge rewards: rank 2 → magnet; rank 3 → shield; rank 4 → double crumbs; rank 5 → star; rank 6 → star + shield. Friends never refill hearts. Shields and stars protect against hazards only.</p><p>Boss fights: each jump opens a 1.2-second party attack window. Stronger friends deal more damage. Keep jumping to attack while dodging shots. Friends carry between trails in this realm; retry restores the trail-start party.</p>',[{label:'Got it',fn:()=>hidePanel()}]));
 $('bBook').addEventListener('click',()=>{ ac(); showBook(); });
 function showHeroes(sel){
   sel=sel||save.hero; const sh=heroById(sel), unl=save.clears>=sh.un, lv=heroLv(sh.id);

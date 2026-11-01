@@ -1,0 +1,11 @@
+SURVIVAL & FRIENDS UPDATE v5
+
+Replace the files in your GitHub Pages repository with the contents of this package. This package has not been pushed to GitHub. Offline cache revision has been updated. Existing progress is preserved.
+
+Gaps now end the attempt regardless of shields, star protection or temporary invulnerability. Removed forward respawning and wall-edge lift. Trail completion requires landing at the exit.
+
+Every six crumbs recruits a friend; matching ranks merge automatically. Five strongest friends increase pickup range and boss attack power. Merging never adds health. Rewards: rank 2 magnet, rank 3 shield, rank 4 double crumbs, rank 5 star, rank 6 star plus shield. Explicit heart pickups and Finn's hero ability remain. Boss attacks require jumping: each jump enables 1.2 seconds of team damage.
+
+New menu guide and live party summary explain recruitment, power, pickup range and attack status.
+
+Verification: JavaScript syntax and isolated regressions using actual game functions pass for unattended gap death, protection bypass, no forward teleport, no airborne exit clear, friend health invariance and bounded attack windows. Full browser/mobile playtesting and difficulty tuning remain pending.
